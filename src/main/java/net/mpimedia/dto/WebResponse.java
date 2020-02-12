@@ -26,7 +26,8 @@ public class WebResponse implements Serializable {
 	private static final long serialVersionUID = -8345271799535134609L;
 	@Builder.Default
 	private Date date = new Date();
-	private String code;
+	@Builder.Default
+	private String code = "00";
 	private String message;
 	private User user;
 	private BaseEntity entity;
