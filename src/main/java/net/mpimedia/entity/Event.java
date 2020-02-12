@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -40,9 +41,11 @@ public class Event extends BaseEntity implements Serializable {
 	 
 
 	@JoinColumn(name = "program_id")
+	@ManyToOne
 	@FormField (entityReferenceName="program",optionItemName="name",type="dynamiclist")
 	private Program program;
 	@JoinColumn(name = "user_id")
+	@ManyToOne
 	private User user;
 
 }

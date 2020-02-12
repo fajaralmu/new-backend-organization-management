@@ -26,7 +26,7 @@
 	</bean>
 
 	<!-- Configuration for Redis Client -->
-	<bean id="jedisPoolConfig"
+	<!-- <bean id="jedisPoolConfig"
 		class="redis.clients.jedis.JedisPoolConfig">
 
 	</bean>
@@ -42,7 +42,7 @@
 		class="org.springframework.data.redis.core.RedisTemplate"
 		p:connection-factory-ref="jedisConnectionFactory">
 	</bean>
-
+ -->
 	<!-- web app custom config -->
 	<bean id="webAppConfig"
 		class="net.mpimedia.service.WebConfigService">

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class Division extends BaseEntity implements Serializable {
 	private String description;
 	@FormField (entityReferenceName="institution",optionItemName="name",type="dynamiclist")
 	@JoinColumn(name = "institution_id")
+	@ManyToOne
 	private Institution institution;
 
 }

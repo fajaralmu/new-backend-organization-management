@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -35,14 +36,14 @@ public class Member extends BaseEntity implements Serializable {
 	@Column
 	public String name;
 	@Column
-	public String description;
-	@Column
-	public int position_id;
+	public String description; 
 
 	@JoinColumn(name = "position_id")
+	@ManyToOne
 	@FormField (entityReferenceName="position",optionItemName="name",type="dynamiclist") 
 	public Position position;
 	@JoinColumn(name = "section_id")
+	@ManyToOne
 	@FormField (entityReferenceName="section",optionItemName="name",type="dynamiclist")
 	public Section section;
 

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -25,7 +26,7 @@ import net.mpimedia.annotation.FormField;
 //------------------------------------------------------------------------------
 @Dto
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 @Data
 @Builder
 @AllArgsConstructor
@@ -47,6 +48,7 @@ public class User extends BaseEntity implements Serializable{
 	@Column
 	public int admin;
 	@JoinColumn(name = "institution_id")
+	@ManyToOne
 	@FormField (entityReferenceName="institution",optionItemName="name",type="dynamiclist")
 	public Institution institution;
 

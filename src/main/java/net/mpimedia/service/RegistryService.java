@@ -25,7 +25,7 @@ public class RegistryService {
 
 	public static final String JSESSSIONID = "JSESSIONID";
 
-	private static final String SESSION_DATA = "session_d4t4";
+	private static final String SESSION_DATA = "session_data";
 
 	@Autowired
 	private Registry registry;

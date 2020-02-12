@@ -6,6 +6,7 @@ import java.util.HashSet;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ public class Program extends BaseEntity implements Serializable {
 	public String description;
 
 	@JoinColumn(name = "section_id")
+	@ManyToOne
 	@FormField (entityReferenceName="section",optionItemName="name",type="dynamiclist") 
 	public Section section;
 
