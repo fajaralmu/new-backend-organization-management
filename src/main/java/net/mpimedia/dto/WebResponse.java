@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import net.mpimedia.annotation.Dto;
 import net.mpimedia.entity.BaseEntity;
 import net.mpimedia.entity.Division;
+import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
 
 @Dto

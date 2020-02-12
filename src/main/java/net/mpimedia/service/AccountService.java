@@ -1,4 +1,4 @@
-﻿package net.mpimedia.service;
+package net.mpimedia.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 
-import net.mpimedia.dto.SessionData;
 import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.Division;
+import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
 import net.mpimedia.repository.DivisionRepository;
 import net.mpimedia.repository.UserRepository;
@@ -25,7 +25,8 @@ public class AccountService {
 	private UserRepository userRepository;
 	@Autowired
 	private DivisionRepository divisionRepository;
-	private SessionService sessionService = new SessionService();
+	@Autowired
+	private SessionService sessionService ;
 
 	@PostConstruct
 	public void init() {

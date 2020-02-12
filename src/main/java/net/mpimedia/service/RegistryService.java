@@ -8,10 +8,12 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.RegistryModel;
-import net.mpimedia.dto.SessionData;
+import net.mpimedia.entity.SessionData;
+import net.mpimedia.repository.SessionDataRepository;
 
 @Service
 public class RegistryService {
@@ -24,10 +26,9 @@ public class RegistryService {
 
 	private static final String SESSION_DATA = "session_data";
 
-	static Map<String, Object> sessions = new HashMap<>();
+	@Autowired
+	private SessionDataRepository sessionDataRepository;
 
-	 
-	
 	public RegistryService() {
 		System.out.println("======================= RegistryService ===============================");
 	}
@@ -39,9 +40,9 @@ public class RegistryService {
 	 * @param key
 	 * @return
 	 */
-	public <T> T getModel(String key) {
+	public SessionData getModel(String key) {
 		try {
-			T object = (T) sessions.get(key);
+			SessionData object = sessionDataRepository.findTop1ByKey(key);
 			System.out.println("==registry model: " + object);
 			return object;
 		} catch (Exception ex) {
@@ -51,85 +52,12 @@ public class RegistryService {
 		}
 	}
 
-	/**
-	 * set registry remote object
-	 * 
-	 * @param key
-	 * @param registryModel
-	 * @return
-	 */
-	public boolean set(String key, Remote registryModel) {
-		try {
-			if (getModel(key) == null) {
-				sessions.put(key, registryModel);
-			} else {
-				sessions.replace(key, registryModel);
-			}
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	/**
-	 * unbind remote object
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public boolean unbind(String key) {
-		try {
-			sessions.remove(key);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-
-	}
-
-	/**
-	 * register new page request to request list
-	 * 
-	 * @param cookie
-	 * @return
-	 */
-	public String addPageRequest(String cookie) {
-		String pageRequestId = UUID.randomUUID().toString();
-		if (getModel(PAGE_REQUEST) != null) {
-			RegistryModel model = getModel(PAGE_REQUEST);
-			model.getTokens().put(pageRequestId, cookie);
-			if (set(PAGE_REQUEST, model)) {
-				return pageRequestId;
-			}
-
-		} else {
-			try {
-				RegistryModel model = new RegistryModel();
-				model.setTokens(new HashMap<>());
-				model.getTokens().put(pageRequestId, cookie);
-				if (set(PAGE_REQUEST, model)) {
-					return pageRequestId;
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-		return null;
-
-	}
-
-	public SessionData getSessionData(String requestId) {
-		// TODO Auto-generated method stub
+	public SessionData getSessionData(String requestId) { 
 		return this.getModel(requestId);
 	}
 
-	public void putSession(String requestId, SessionData existingSessionData) {
-		// TODO Auto-generated method stub
-		this.set(requestId, existingSessionData);
+	public void putSession(String requestId, SessionData existingSessionData) { 
+		sessionDataRepository.save(existingSessionData);
 	}
 
 	/**

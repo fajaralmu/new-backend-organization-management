@@ -1,4 +1,4 @@
-﻿package net.mpimedia.service;
+package net.mpimedia.service;
 
 import java.util.Date;
 import java.util.UUID;
@@ -8,8 +8,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.mpimedia.dto.SessionData;
 import net.mpimedia.dto.WebResponse;
+import net.mpimedia.entity.SessionData;
 
 @Service
 public class ApplicationService {
@@ -45,7 +45,7 @@ public class ApplicationService {
 
 		if (!exist) {
 			registryService.putSession(RandomChar,
-					SessionData.builder().message(RandomChar).requestDate(new Date()).build());
+					SessionData.builder().key(RandomChar).message(RandomChar).requestDate(new Date()).build());
 		}
 
 		return response;
