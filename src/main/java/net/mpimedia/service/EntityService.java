@@ -217,60 +217,65 @@ public class EntityService {
 	public WebResponse filter(WebRequest request) {
 		Class<? extends BaseEntity> entityClass = null;
 
-		switch (request.getEntity().toLowerCase()) {
-		case "institution":
-			entityClass = Institution.class;
-			break;
+		try {
+			switch (request.getEntity().toLowerCase()) {
+			case "institution":
+				entityClass = Institution.class;
+				break;
 
-		case "division":
-			entityClass = Division.class;
-			break;
+			case "division":
+				entityClass = Division.class;
+				break;
 
-		case "post":
-			entityClass = Post.class;
-			break;
+			case "post":
+				entityClass = Post.class;
+				break;
 
-		case "member":
-			entityClass = Member.class;
-			break;
+			case "member":
+				entityClass = Member.class;
+				break;
 
-		case "user":
-			entityClass = User.class;
-			break;
+			case "user":
+				entityClass = User.class;
+				break;
 
-		case "program":
-			entityClass = Program.class;
-			break;
+			case "program":
+				entityClass = Program.class;
+				break;
 
-		case "section":
-			entityClass = Section.class;
-			break;
+			case "section":
+				entityClass = Section.class;
+				break;
 
-		case "event":
-			entityClass = Event.class;
-			break;
+			case "event":
+				entityClass = Event.class;
+				break;
 
-		case "message":
-			entityClass = Message.class;
-			break;
+			case "message":
+				entityClass = Message.class;
+				break;
 
-		case "position":
-			entityClass = Position.class;
-			break;
-		default:
+			case "position":
+				entityClass = Position.class;
+				break;
+			default:
+				return WebResponse.failed();
+			}
+			Filter filter = request.getFilter();
+			String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
+			String sql = sqlListAndCount[0];
+			String sqlCount = sqlListAndCount[1];
+			List<BaseEntity> entities = getEntitiesBySql(sql, entityClass);
+			Integer count = 0;
+			Object countResult = repositoryCustom.getSingleResult(sqlCount);
+			if (countResult != null) {
+				count = ((BigInteger) countResult).intValue();
+			}
+			return WebResponse.builder().entities(entities).totalData(count).filter(filter).build();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 			return WebResponse.failed();
 		}
-		Filter filter = request.getFilter();
-		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
-		String sql = sqlListAndCount[0];
-		String sqlCount = sqlListAndCount[1];
-		List<BaseEntity> entities = getEntitiesBySql(sql, entityClass);
-		Integer count = 0;
-		Object countResult = repositoryCustom.getSingleResult(sqlCount);
-		if (countResult != null) {
-			count = ((BigInteger) countResult).intValue();
-		}
-		return WebResponse.builder().entities(entities).totalData(count).filter(filter).build();
 	}
 
 	/**
