@@ -34,8 +34,10 @@ public class Member extends BaseEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 9064242000875756709L;
 	@Column
+	@FormField
 	public String name;
 	@Column
+	@FormField
 	public String description; 
 
 	@JoinColumn(name = "position_id")

@@ -31,7 +31,7 @@ public class WebResponse implements Serializable {
 	private User user;
 	private BaseEntity entity;
 	private List<BaseEntity> entities;
-	private List<Division> divisions;
+	private List<Division> divisions; 
 
 	private int totalData;
 	private SessionData sessionData;

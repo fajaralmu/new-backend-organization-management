@@ -33,8 +33,10 @@ import net.mpimedia.annotation.FormField;
 public class Program extends BaseEntity implements Serializable {
 
 	@Column
+	@FormField
 	public String name;
 	@Column
+	@FormField
 	public String description;
 
 	@JoinColumn(name = "section_id")

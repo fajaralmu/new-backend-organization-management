@@ -38,14 +38,19 @@ public class User extends BaseEntity implements Serializable{
 	 */
 	private static final long serialVersionUID = 7582045155923785034L;
 	@Column
+	@FormField
 	public String username;
 	@Column
+	@FormField
 	public String name;
 	@Column
+	@FormField
 	public String password;
 	@Column
+	@FormField
 	public String email;
 	@Column
+	@FormField
 	public int admin;
 	@JoinColumn(name = "institution_id")
 	@ManyToOne

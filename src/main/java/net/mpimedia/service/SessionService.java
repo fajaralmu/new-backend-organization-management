@@ -1,5 +1,7 @@
 ﻿package net.mpimedia.service;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,11 +11,17 @@ import net.mpimedia.entity.User;
 
 @Service
 public class SessionService {
-	@Autowired
-	private RegistryService registryService;
-
+	
+	 
+	private final  RegistryService registryService = new RegistryService();
+	
+	 
+	 
+	
 	public boolean putUser(String requestId, User finalUser) {
 
+		System.out.println(" o o o o o "+registryService);
+		
 		SessionData existingSessionData = registryService.getSessionData(requestId);
 
 		if (existingSessionData != null) {

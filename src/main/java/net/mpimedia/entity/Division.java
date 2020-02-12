@@ -27,8 +27,10 @@ public class Division extends BaseEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 3882451302950284229L;
 	@Column
+	@FormField
 	private String name;
 	@Column
+	@FormField
 	private String description;
 	@FormField (entityReferenceName="institution",optionItemName="name",type="dynamiclist")
 	@JoinColumn(name = "institution_id")

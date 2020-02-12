@@ -33,7 +33,11 @@ import net.mpimedia.annotation.FormField;
 public class Section extends BaseEntity implements Serializable {
 
 	@Column
+	@FormField
 	public String name;
+	@Column
+	@FormField
+	private String description;
 	@Column(name="parent_section_id")
 	public int parentSectionId;
 

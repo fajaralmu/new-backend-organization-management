@@ -27,16 +27,22 @@ import net.mpimedia.annotation.FormField;
 public class Event extends BaseEntity implements Serializable {
 
 	@Column
+	@FormField
 	private String name;
 	@Column
+	@FormField
 	private String location;
 	@Column
+	@FormField
 	private String info;
 	@Column
+	@FormField
 	private int done;
 	@Column
+	@FormField
 	private int participant;  
 	@Column
+	@FormField
 	private Date date;
 	 
 

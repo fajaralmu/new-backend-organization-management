@@ -28,15 +28,17 @@ import net.mpimedia.entity.Event;
 import net.mpimedia.entity.Institution;
 import net.mpimedia.entity.Member;
 import net.mpimedia.entity.Message;
+import net.mpimedia.entity.Position;
 import net.mpimedia.entity.Post;
 import net.mpimedia.entity.Program;
 import net.mpimedia.entity.RegisteredRequest;
-import net.mpimedia.entity.Section; 
-import net.mpimedia.entity.User; 
+import net.mpimedia.entity.Section;
+import net.mpimedia.entity.User;
 import net.mpimedia.repository.DivisionRepository;
 import net.mpimedia.repository.EventRepository;
 import net.mpimedia.repository.InstitutionRepository;
 import net.mpimedia.repository.MemberRepository;
+import net.mpimedia.repository.PositionRepository;
 import net.mpimedia.repository.PostRepository;
 import net.mpimedia.repository.ProgramRepository;
 import net.mpimedia.repository.RegisteredRequestRepository;
@@ -59,9 +61,9 @@ public class EntityService {
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
-	private RepositoryCustomImpl repositoryCustom; 
+	private RepositoryCustomImpl repositoryCustom;
 	@Autowired
-	private ProgramRepository programRepository; 
+	private ProgramRepository programRepository;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -72,6 +74,8 @@ public class EntityService {
 	private RegisteredRequestRepository registeredRequestRepository;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private PositionRepository positionRepository;
 
 	@PostConstruct
 	public void init() {
@@ -80,36 +84,43 @@ public class EntityService {
 
 	public WebResponse addEntity(WebRequest request, boolean newRecord) {
 
-		switch (request.getEntity().toLowerCase()) {
-		case "institution":
-			return saveInstitution(request.getInstitution(), newRecord);
+		try {
+			switch (request.getEntity().toLowerCase()) {
+			case "institution":
+				return saveInstitution(request.getInstitution(), newRecord);
 
-		case "division":
-			return saveDivision(request.getDivision(), newRecord);
+			case "division":
+				return saveDivision(request.getDivision(), newRecord);
 
-		case "post":
-			return savePost(request.getPost(), newRecord);
+			case "post":
+				return savePost(request.getPost(), newRecord);
 
-		case "member":
-			return saveMember(request.getMember(), newRecord);
+			case "member":
+				return saveMember(request.getMember(), newRecord);
 
-		case "user":
-			return saveUser(request.getUser(), newRecord);
+			case "user":
+				return saveUser(request.getUser(), newRecord);
 
-		case "program":
-			return saveProgram(request.getProgram(), newRecord);
+			case "program":
+				return saveProgram(request.getProgram(), newRecord);
 
-		case "section":
-			return saveSection(request.getSection(), newRecord);
- 
-		case "event":
-			return saveEvent(request.getEvent(), newRecord);
-		case "registeredrequest":
-			return saveRegisteredRequest(request.getRegisteredRequest(), newRecord);
+			case "section":
+				return saveSection(request.getSection(), newRecord);
 
+			case "event":
+				return saveEvent(request.getEvent(), newRecord);
+			case "registeredrequest":
+				return saveRegisteredRequest(request.getRegisteredRequest(), newRecord);
+
+			case "position":
+				return savePosition(request.getPosition(), newRecord);
+
+			}
+		} catch (Exception ex) {
+			return WebResponse.builder().code("01").message(ex.getMessage()).build();
 		}
+		return WebResponse.failed();
 
-		return WebResponse.builder().code("01").message("failed").build();
 	}
 
 	private WebResponse saveRegisteredRequest(RegisteredRequest registeredRequest, boolean newRecord) {
@@ -118,12 +129,18 @@ public class EntityService {
 		return WebResponse.builder().entity(newRegisteredRequest).build();
 	}
 
-	 
+	private WebResponse savePosition(Position entity, boolean newRecord) {
+		entity = (Position) copyNewElement(entity, newRecord);
+		Position savedEntity = positionRepository.save(entity);
+		return WebResponse.builder().entity(savedEntity).build();
+	}
+
 	private WebResponse saveEvent(Event entity, boolean newRecord) {
 		entity = (Event) copyNewElement(entity, newRecord);
 		Event savedEntity = eventRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
+
 	private WebResponse saveSection(Section section, boolean newRecord) {
 		section = (Section) copyNewElement(section, newRecord);
 		Section newSection = sectionRepository.save(section);
@@ -138,7 +155,7 @@ public class EntityService {
 
 	private WebResponse saveProgram(Program program, boolean newRecord) {
 		program = (Program) copyNewElement(program, newRecord);
-		
+
 		Program newProgram = programRepository.save(program);
 		return WebResponse.builder().entity(newProgram).build();
 	}
@@ -146,12 +163,10 @@ public class EntityService {
 	private WebResponse saveMember(Member member, boolean newRecord) {
 
 		member = (Member) copyNewElement(member, newRecord);
-		 
+
 		Member newMember = memberRepository.save(member);
 		return WebResponse.builder().entity(newMember).build();
 	}
-
-	 
 
 	private WebResponse savePost(Post post, boolean newRecord) {
 
@@ -161,29 +176,30 @@ public class EntityService {
 	}
 
 	private Object copyNewElement(Object source, boolean newRecord) {
-		return EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);
+		Object result = EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);
+
+		System.out.println("xxxxxxxxxxxxxSource: " + source + ", nResult: " + result);
+
+		return result;
 	}
 
 	private WebResponse saveDivision(Division division, boolean newRecord) {
 
 		division = (Division) copyNewElement(division, newRecord);
 
-		 
 		Division newDivision = divisionRepository.save(division);
 		return WebResponse.builder().entity(newDivision).build();
 	}
-	
-	
-	
+
 	private List removeNullItemFromArray(String[] array) {
 		List<Object> result = new ArrayList<>();
 		for (String string : array) {
-			if(string!=null) {
+			if (string != null) {
 				result.add(string);
 			}
 		}
 		return result;
-		
+
 	}
 
 	private WebResponse saveInstitution(Institution institution, boolean newRecord) {
@@ -232,12 +248,17 @@ public class EntityService {
 
 		case "event":
 			entityClass = Event.class;
-			break;  
+			break;
 
 		case "message":
 			entityClass = Message.class;
 			break;
 
+		case "position":
+			entityClass = Position.class;
+			break;
+		default:
+			return WebResponse.failed();
 		}
 		Filter filter = request.getFilter();
 		String[] sqlListAndCount = generateSqlByFilter(filter, entityClass);
@@ -268,7 +289,7 @@ public class EntityService {
 		boolean contains = filter.isContains();
 		boolean exacts = filter.isExacts();
 		boolean withFilteredField = filter.getFieldsFilter().isEmpty() == false;
-		
+
 		String orderType = filter.getOrderType();
 		String orderBy = filter.getOrderBy();
 		String tableName = getTableName(entityClass);
@@ -298,6 +319,10 @@ public class EntityService {
 	}
 
 	private static String getColumnName(Field field) {
+		System.out.println(field.getDeclaringClass() + " from " + field.getName());
+
+		if (field.getAnnotation(Column.class) == null)
+			return field.getName();
 		String columnName = ((Column) field.getAnnotation(Column.class)).name();
 		if (columnName == null || columnName.equals("")) {
 			columnName = field.getName();
@@ -436,7 +461,7 @@ public class EntityService {
 			System.out.println("SQL ITEM: " + sqlItem + " contains :" + itemContains + ", exacts:" + itemExacts);
 			filters.add(sqlItem);
 		}
-		if(filters == null || filters.size() == 0) {
+		if (filters == null || filters.size() == 0) {
 			return "";
 		}
 		return " WHERE " + String.join(" AND ", filters);
@@ -489,7 +514,7 @@ public class EntityService {
 		Map<String, Object> filter = request.getFilter().getFieldsFilter();
 		try {
 			Long id = Long.parseLong(filter.get("id").toString());
-			switch (request.getEntity()) {
+			switch (request.getEntity().toLowerCase()) {
 			case "institution":
 				institutionRepository.deleteById(id);
 				break;
@@ -515,8 +540,9 @@ public class EntityService {
 				eventRepository.deleteById(id);
 				break;
 			case "registeredrequest":
-			case "registeredRequest":
 				registeredRequestRepository.deleteById(id);
+			case "position":
+				positionRepository.deleteById(id);
 			}
 			return WebResponse.builder().code("00").message("deleted successfully").build();
 		} catch (Exception ex) {
@@ -524,5 +550,5 @@ public class EntityService {
 			return WebResponse.builder().code("01").message("failed").build();
 		}
 	}
- 
+
 }

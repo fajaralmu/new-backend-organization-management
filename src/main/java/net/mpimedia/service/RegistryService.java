@@ -1,16 +1,13 @@
 package net.mpimedia.service;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.Registry;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.RegistryModel;
@@ -27,13 +24,12 @@ public class RegistryService {
 
 	private static final String SESSION_DATA = "session_data";
 
-	@Autowired
-	private Registry registry;
+	static Map<String, Object> sessions = new HashMap<>();
 
-	@PostConstruct
-	public void init() {
-		LogProxyFactory.setLoggers(this);
-		set(SESSION_DATA, new SessionData());
+	 
+	
+	public RegistryService() {
+		System.out.println("======================= RegistryService ===============================");
 	}
 
 	/**
@@ -45,12 +41,9 @@ public class RegistryService {
 	 */
 	public <T> T getModel(String key) {
 		try {
-			T object = (T) registry.lookup(key);
+			T object = (T) sessions.get(key);
 			System.out.println("==registry model: " + object);
 			return object;
-		} catch (RemoteException | NotBoundException e) {
-			System.out.println("key not bound");
-			return null;
 		} catch (Exception ex) {
 			System.out.println("Unexpected error");
 			ex.printStackTrace();
@@ -68,14 +61,12 @@ public class RegistryService {
 	public boolean set(String key, Remote registryModel) {
 		try {
 			if (getModel(key) == null) {
-				registry.bind(key, registryModel);
+				sessions.put(key, registryModel);
 			} else {
-				registry.rebind(key, registryModel);
+				sessions.replace(key, registryModel);
 			}
 			return true;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -89,9 +80,9 @@ public class RegistryService {
 	 */
 	public boolean unbind(String key) {
 		try {
-			registry.unbind(key);
+			sessions.remove(key);
 			return true;
-		} catch (RemoteException | NotBoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -113,10 +104,10 @@ public class RegistryService {
 				return pageRequestId;
 			}
 
-		} else { 
+		} else {
 			try {
-				RegistryModel	model = new  RegistryModel();
-				model.setTokens(new HashMap<>()); 
+				RegistryModel model = new RegistryModel();
+				model.setTokens(new HashMap<>());
 				model.getTokens().put(pageRequestId, cookie);
 				if (set(PAGE_REQUEST, model)) {
 					return pageRequestId;
@@ -125,7 +116,7 @@ public class RegistryService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 		return null;
 

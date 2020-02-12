@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.hibernate.internal.jaxb.mapping.hbm.EntityElement;
@@ -163,7 +164,9 @@ public class EntityUtil {
 	}
 
 	public static Field getIdField(Class clazz) {
-		if (clazz.getAnnotation(Dto.class) == null) {
+		System.out.println("Get ID FIELD FROM :"+clazz.getCanonicalName());
+		
+		if (clazz.getAnnotation(Entity.class) == null) {
 			return null;
 		}
 		List<Field> fields = getDeclaredFields(clazz);
