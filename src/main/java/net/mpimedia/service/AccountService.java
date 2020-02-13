@@ -2,7 +2,6 @@ package net.mpimedia.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -15,7 +14,6 @@ import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.Division;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
-import net.mpimedia.repository.DivisionRepository;
 import net.mpimedia.repository.UserRepository;
 
 @Service
@@ -23,7 +21,7 @@ public class AccountService {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private DivisionRepository divisionRepository;
+	private TemporaryDataService temporaryDataService;
 	@Autowired
 	private SessionService sessionService ;
 
@@ -53,7 +51,7 @@ public class AccountService {
 
 			boolean updateSession = sessionService.putUser(webRequest.getRequestId(), finalUser);
 			if (updateSession) {
-				List<Division> divisionList = divisionRepository.findByInstitution(finalUser.getInstitution());
+				List<Division> divisionList = temporaryDataService.getDivision(finalUser);
 
 				response.setDivisions(divisionList);
 				return response;
@@ -77,7 +75,7 @@ public class AccountService {
 		if (null != sessionData && null != sessionData.getUser()) {
 			WebResponse response = WebResponse.success();
 
-			List<Division> divisions = divisionRepository.findByInstitution(sessionData.getUser().getInstitution());
+			List<Division> divisions = temporaryDataService.getDivision(sessionData.getUser());
 
 			if (null == divisions) {
 				divisions = new ArrayList<>();
@@ -95,11 +93,11 @@ public class AccountService {
 		if (null != sessionData && null != sessionData.getUser()) {
 			WebResponse response = WebResponse.success();
 			try {
-				Optional<Division> division = divisionRepository.findById(webRequest.getDivisionId());
+				 Division  division = temporaryDataService.getById(webRequest.getDivisionId());
 
-				if (division.isPresent()) {
-					response.setEntity(division.get());
-					sessionData.setDivision(division.get());
+				if (division!=null) {
+					response.setEntity(division );
+					sessionData.setDivision(division );
 					sessionService.updateSessionData(webRequest.getRequestId(), sessionData);
 
 					response.setSessionData(this.sessionService.GetSessionData(webRequest));
