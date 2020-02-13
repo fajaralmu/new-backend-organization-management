@@ -39,9 +39,11 @@ public class ApplicationService {
 					response.setLoggedIn(true);
 				}
 			}
+			response.setSessionData(sessionData);
 		}
 
 		response.setMessage(RandomChar);
+		
 
 		if (!exist) {
 			registryService.storeSessionData(RandomChar,
