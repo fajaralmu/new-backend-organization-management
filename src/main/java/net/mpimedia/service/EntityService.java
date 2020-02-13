@@ -432,7 +432,7 @@ public class EntityService {
 	}
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
-			boolean exacts) {
+			boolean exacts, BaseEntity rootFilterEntity) {
 
 		String tableName = getTableName(entityClass);
 		List<String> filters = new ArrayList<String>();
@@ -566,12 +566,45 @@ public class EntityService {
 			
 			filters.add(sqlItem.toString());
 		}
-		if (filters == null || filters.size() == 0) {
-			return "";
+		
+		String additionalFilter = "";
+		
+		if(rootFilterEntity != null) {
+			additionalFilter = addFilterById(rootFilterEntity.getClass() , rootFilterEntity.getId());
 		}
-		return " WHERE " + String.join(" AND ", filters);
+		
+		if (filters == null || filters.size() == 0) {
+			
+			 if(rootFilterEntity != null) { 
+				 
+				return "WHERE ".concat(additionalFilter);
+			}
+			
+			return "";
+			
+		}
+		return " WHERE " + String.join(" AND ", filters).concat(" AND ").concat(additionalFilter);
 	}
 
+	public static String addFilterById(Class entityClass, Object id) {
+		 
+		
+		String tableName = getTableName(entityClass);
+		Field idField = EntityUtil.getIdField(entityClass);
+		
+		String idColumnName = getColumnName(idField);
+		
+		String filter = buildString(
+				doubleQuoteMysql(tableName).
+				concat(".").
+				concat(doubleQuoteMysql(idColumnName)).
+				concat("=").
+				concat("'"+id+"'"));
+		
+		return filter;
+		
+	}
+	
 	private static String orderSQL(Class entityClass, String orderType, String orderBy) {
 
 		/**
@@ -696,7 +729,7 @@ public class EntityService {
 				"OFFSET", String.valueOf(offset)) : "";
 		
 		String filterSQL = withFilteredField ? 
-				createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts)
+				createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts, rootFilterEntity)
 				: "";
 		
 		String joinSql = createLeftJoinSQL(entityClass);
