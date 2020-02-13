@@ -50,19 +50,20 @@ public class RegistryService {
 			
 			return sessions.get(key);
 		}
+		return null;
 		
-		log.info("Will get from DB");
-		
-		try {
-			SessionData object = sessionDataRepository.findTop1ByKey(key); 
-			sessions.put(key, object);
-			return object;
-			
-		} catch (Exception ex) { 
-			ex.printStackTrace();
-			return null;
-			
-		}
+//		log.info("Will get from DB");
+//		
+//		try {
+//			SessionData object = sessionDataRepository.findTop1ByKey(key); 
+//			sessions.put(key, object);
+//			return object;
+//			
+//		} catch (Exception ex) { 
+//			ex.printStackTrace();
+//			return null;
+//			
+//		}
 	}
 
 	public SessionData getSessionData(String requestId) { 
