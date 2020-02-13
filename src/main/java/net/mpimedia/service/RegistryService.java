@@ -1,12 +1,17 @@
 package net.mpimedia.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.repository.SessionDataRepository;
 
 @Service
+@Slf4j
 public class RegistryService {
 
 	public static final String PAGE_REQUEST = "page_req_id";
@@ -19,6 +24,9 @@ public class RegistryService {
 
 	@Autowired
 	private SessionDataRepository sessionDataRepository;
+	
+	private Map<String, SessionData> sessions = new HashMap<>();
+	
 
 	public RegistryService() {
 		System.out.println("======================= RegistryService ===============================");
@@ -33,8 +41,17 @@ public class RegistryService {
 	 */
 	public SessionData getModel(String key) {
 		
+		if(sessions.get(key)!=null) {
+			log.info("Exist in current hashmap: {}",sessions.get(key));
+			
+			return sessions.get(key);
+		}
+		
+		log.info("Will get from DB");
+		
 		try {
 			SessionData object = sessionDataRepository.findTop1ByKey(key); 
+			sessions.put(key, object);
 			return object;
 			
 		} catch (Exception ex) { 
@@ -48,8 +65,25 @@ public class RegistryService {
 		return this.getModel(requestId);
 	}
 
-	public void putSession(String requestId, SessionData existingSessionData) { 
-		sessionDataRepository.save(existingSessionData);
+	public void putSession(String requestId, SessionData existingSessionData) {  
+		
+		sessions.put(requestId, existingSessionData);
+		
+		Thread thread = new Thread(new Runnable() { 
+				@Override
+				public void run() {
+					
+					log.info("Will save to DB");
+					
+					sessionDataRepository.save(existingSessionData);
+					
+					log.info("Saved to DB");
+					
+				}
+			} 
+		);
+		
+		thread.start();
 	}
 
 	/**
