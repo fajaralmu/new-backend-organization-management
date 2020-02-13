@@ -46,8 +46,6 @@ public class RegistryService {
 	public SessionData getModel(String key) {
 		
 		if(sessions.get(key)!=null) {
-			log.info("Exist in current hashmap: {}",sessions.get(key));
-			
 			return sessions.get(key);
 		}
 		return null;
@@ -104,6 +102,7 @@ public class RegistryService {
 	}
 	
 	public void remove(String key) {
+		log.info("Will remove from session: {}", key);
 		this.sessions.remove(key);
 	}
 	
