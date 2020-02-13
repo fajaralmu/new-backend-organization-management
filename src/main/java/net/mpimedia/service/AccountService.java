@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.WebRequest;

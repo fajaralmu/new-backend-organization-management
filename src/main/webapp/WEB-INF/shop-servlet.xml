@@ -65,7 +65,7 @@
 	<bean id="dataSource_OFFLINE"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
-			value="com.mysql.jdbc.Driver" />
+			value="com.mysql.cj.jdbc.Driver" />
 		<property name="url"
 			value="jdbc:mysql://localhost:3306/mpimedia" />
 		<property name="username" value="root" />
@@ -74,18 +74,18 @@
 	<bean id="dataSource_CLOUD"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName"
-			value="com.mysql.jdbc.Driver" />
+			value="com.mysql.cj.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://remotemysql.com:3306/YcnBC2qXWF" />
-		<property name="username" value="YcnBC2qXWF" />
-		<property name="password" value="lkuEobwbqC" />
+			value="jdbc:mysql://db4free.net:3306/mpimedianet" />
+		<property name="username" value="mpimedianet" />
+		<property name="password" value="dakwahmedia" />
 	</bean>
 
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="packagesToScan" value="net.mpimedia*" />
-		<property name="dataSource" ref="dataSource_OFFLINE" /><!-- 
+		<property name="dataSource" ref="dataSource_CLOUD" /><!-- 
 		<property name="sessionFactory" ref="sessionFactory"></property> -->
 		<property name="jpaProperties">
 			<props>

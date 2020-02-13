@@ -16,7 +16,7 @@ public class AppController {
 	@RequestMapping(value = { "/main" })
 	public String main(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		model.addAttribute("baseResourcePath", "/organization-management/res/app");
+		model.addAttribute("baseResourcePath", request.getContextPath().concat("/res/app"));
 		return "app/default";
 	}
 }

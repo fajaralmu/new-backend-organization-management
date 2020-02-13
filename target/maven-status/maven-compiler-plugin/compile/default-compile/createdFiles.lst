@@ -7,6 +7,7 @@ net\mpimedia\entity\Member$MemberBuilder.class
 net\mpimedia\dto\UserTempRequest.class
 net\mpimedia\parameter\Routing.class
 net\mpimedia\util\StringUtil.class
+net\mpimedia\test\DBConnection.class
 net\mpimedia\service\AdminService.class
 net\mpimedia\entity\User.class
 net\mpimedia\repository\RegisteredRequestRepository.class
@@ -89,5 +90,6 @@ net\mpimedia\util\MyJsonUtil.class
 net\mpimedia\repository\RepositoryCustom.class
 net\mpimedia\repository\SectionRepository.class
 net\mpimedia\repository\EventRepository.class
+net\mpimedia\service\EntityService$1.class
 net\mpimedia\repository\MessageRepository.class
 net\mpimedia\test\SqlMpiMedia.class

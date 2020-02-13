@@ -272,7 +272,6 @@ public class EntityService {
 			if(filter == null) {
 				filter= new Filter();
 			}
-			
 			if(filter.getFieldsFilter() == null) {
 				filter.setFieldsFilter(new HashMap<>());
 			}
