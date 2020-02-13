@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.mpimedia.annotation.CustomEntity;
 import net.mpimedia.annotation.FormField;
 
 //------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ import net.mpimedia.annotation.FormField;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@CustomEntity(rootFilter = {  "section","division"}) 
 public class Program extends BaseEntity implements Serializable {
 
 	@Column

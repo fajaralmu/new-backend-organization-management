@@ -22,9 +22,9 @@ public class Filter implements Serializable {
 	*/
 	private static final long serialVersionUID = -5151185528546046666L;
 	@Builder.Default
-	private Integer limit = 0;
+	private int limit = 0;
 	@Builder.Default
-	private Integer page = 0;
+	private int page = 0;
 	private String orderType;
 	private String orderBy;
 	@Builder.Default

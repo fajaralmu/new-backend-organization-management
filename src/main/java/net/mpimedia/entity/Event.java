@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.mpimedia.annotation.CustomEntity;
 import net.mpimedia.annotation.FormField;
 
 @Entity
@@ -24,6 +25,9 @@ import net.mpimedia.annotation.FormField;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
+//
+@CustomEntity(rootFilter = { "program","section","division"})
 public class Event extends BaseEntity implements Serializable {
 
 	@Column

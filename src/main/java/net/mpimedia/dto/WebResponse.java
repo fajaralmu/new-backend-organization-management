@@ -50,7 +50,11 @@ public class WebResponse implements Serializable {
 		this.message = message;
 	}
 	public static WebResponse failed() {
-		return new WebResponse("01", "INVALID REQUEST");
+		return   failed("INVALID REQUEST");
+	}
+	
+	public static WebResponse failed(String msg) {
+		return new WebResponse("01", msg);
 	}
 	public static WebResponse failedResponse() {
 		return new WebResponse("01", "INVALID REQUEST");

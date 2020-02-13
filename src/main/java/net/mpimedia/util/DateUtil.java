@@ -14,30 +14,42 @@ public class DateUtil {
 	
 	public static String getTimeGreeting() {
 		int hour = cal().get(Calendar.HOUR_OF_DAY);
+		
 		String time = "Morning";
+		
 		if(hour>=3 &&hour < 11) {
 			time = "Morning";
+			
 		}else if(hour>=11 && hour<18) {
 			time = "Afternoon";
+			
 		}else {
 			time = "Evening";
+			
 		}
 			 
 		return time;
 	}
 	
 	public static String getFullFirstDate(int month, int year) {
+		
 		return year+"-"+StringUtil.addZeroBefore(month)+"-01";
 	}
 	
 	public static String getFullLastDate(int month, int year) {
+		
 		String date = "";
 		Integer day = getMonths()[month-1];
+		
 		boolean kabisat = year % 4 == 0;
+		
 		if(kabisat && month == 2) {
 			day = 29;
+			
 		}
+		
 		date = year+"-"+StringUtil.addZeroBefore(month)+"-"+day;
+		
 		return date;
 	}
 

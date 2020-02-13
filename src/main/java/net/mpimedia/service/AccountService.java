@@ -108,8 +108,9 @@ public class AccountService {
 				}
 
 			} catch (Exception ex) {
-
-			}
+				System.out.println("==========exception handled: "+ex);
+				ex.printStackTrace();
+			}	
 		}
 
 		return WebResponse.failed();

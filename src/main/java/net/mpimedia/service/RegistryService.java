@@ -1,17 +1,8 @@
 package net.mpimedia.service;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.mpimedia.dto.RegistryModel;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.repository.SessionDataRepository;
 
@@ -41,14 +32,15 @@ public class RegistryService {
 	 * @return
 	 */
 	public SessionData getModel(String key) {
+		
 		try {
-			SessionData object = sessionDataRepository.findTop1ByKey(key);
-			System.out.println("==registry model: " + object);
+			SessionData object = sessionDataRepository.findTop1ByKey(key); 
 			return object;
-		} catch (Exception ex) {
-			System.out.println("Unexpected error");
+			
+		} catch (Exception ex) { 
 			ex.printStackTrace();
 			return null;
+			
 		}
 	}
 

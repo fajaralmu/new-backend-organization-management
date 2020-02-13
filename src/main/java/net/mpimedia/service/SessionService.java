@@ -15,8 +15,6 @@ public class SessionService {
 
 	public boolean putUser(String requestId, User finalUser) {
 
-		System.out.println(" o o o o o " + registryService);
-
 		SessionData existingSessionData = registryService.getSessionData(requestId);
 
 		if (existingSessionData != null) {

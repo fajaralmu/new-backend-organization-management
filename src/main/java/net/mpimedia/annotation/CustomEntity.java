@@ -16,6 +16,8 @@ import java.lang.annotation.Target;
         ElementType.TYPE)
 public @interface CustomEntity {
 
-    public String[] propOrder();
+    public String[] propOrder() default  {};
+    public String[] rootFilter() default {};
+    
 
 }

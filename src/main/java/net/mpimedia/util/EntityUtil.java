@@ -128,16 +128,19 @@ public class EntityUtil {
 
 			}
 			return field;
+			
 		} catch (NoSuchFieldException | SecurityException e) {
-			System.out.println("Error get declared field in the class, and try access super class");
+			log.info("Error get declared field in the class, and try access super class");
 		}
 		if (clazz.getSuperclass() != null) {
+			
 			try {
-				System.out.println("TRY ACCESS SUPERCLASS");
+				log.info("TRY ACCESS SUPERCLASS");
 				return clazz.getSuperclass().getDeclaredField(fieldName);
+				
 			} catch (NoSuchFieldException | SecurityException e) {
 				// TODO Auto-generated catch block
-				System.out.println("FAILED Getting FIELD: " + fieldName);
+				log.info("FAILED Getting FIELD: " + fieldName);
 				e.printStackTrace();
 			}
 		}
@@ -150,11 +153,14 @@ public class EntityUtil {
 
 		List<EntityElement> entityElements = new ArrayList<EntityElement>();
 		List<Field> fieldList = new ArrayList<>();
+		
 		for (Field field : baseField) {
 			fieldList.add(field);
 		}
 		if (clazz.getSuperclass() != null) {
+			
 			Field[] parentFields = clazz.getSuperclass().getDeclaredFields();
+			
 			for (Field field : parentFields) {
 				fieldList.add(field);
 			}
@@ -164,14 +170,17 @@ public class EntityUtil {
 	}
 
 	public static Field getIdField(Class clazz) {
-		System.out.println("Get ID FIELD FROM :"+clazz.getCanonicalName());
+		log.info("Get ID FIELD FROM :"+clazz.getCanonicalName());
 		
 		if (clazz.getAnnotation(Entity.class) == null) {
 			return null;
 		}
 		List<Field> fields = getDeclaredFields(clazz);
+		
 		for (Field field : fields) {
+			
 			if (field.getAnnotation(Id.class) != null) {
+				
 				return field;
 			}
 		}
@@ -187,7 +196,7 @@ public class EntityUtil {
 
 	 
 	public static Object copyFieldElementProperty(Object source, Class targetClass, boolean withId) {
-		System.out.println("CLASSSS :" + targetClass.getCanonicalName());
+		log.info("CLASSSS :" + targetClass.getCanonicalName());
 		Object targetObject = null;
 		try {
 			targetObject = targetClass.newInstance();
@@ -196,19 +205,27 @@ public class EntityUtil {
 			e.printStackTrace();
 		}
 		List<Field> fields = getDeclaredFields(source.getClass());
+		
 		for (Field field : fields) {
 			FormField formField = field.getAnnotation(FormField.class);
+			
 			if (formField != null) {
+				
 				if (field.getAnnotation(Id.class) != null && !withId) {
 					continue;
 				}
 
 				Field currentField = getDeclaredField(targetClass, field.getName());
-				if(currentField == null) continue;
+				
+				if(currentField == null) 
+					continue;
+				
 				currentField.setAccessible(true);
 				field.setAccessible(true);
+				
 				try {
 					currentField.set(targetObject, field.get(source));
+					
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

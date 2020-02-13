@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.mpimedia.annotation.CustomEntity;
 import net.mpimedia.annotation.FormField;
 
 //------------------------------------------------------------------------------
@@ -29,9 +30,14 @@ import net.mpimedia.annotation.FormField;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor 
+@CustomEntity(rootFilter = {  "division"})  
 public class Section extends BaseEntity implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4402925267475327805L;
 	@Column
 	@FormField
 	public String name;

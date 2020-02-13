@@ -41,25 +41,25 @@ public class ApiEntityController {
 	public WebResponse add(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.addEntity(webRequest, true);
+		return entityService.addEntity(RestUtil.populateRequest(webRequest, httpRequest) , true);
 	}
 	@PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse update(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.addEntity(webRequest, false);
+		return entityService.addEntity(RestUtil.populateRequest(webRequest, httpRequest), false);
 	}
 	@PostMapping(value = "/get",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse get(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.filter(webRequest);
+		return entityService.filter(RestUtil.populateRequest(webRequest, httpRequest));
 	}
 	@PostMapping(value = "/delete",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse delete(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.delete(webRequest);
+		return entityService.delete(RestUtil.populateRequest(webRequest, httpRequest));
 	}
 	
 	 

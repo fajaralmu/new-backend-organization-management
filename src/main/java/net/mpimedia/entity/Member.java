@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.mpimedia.annotation.CustomEntity;
 import net.mpimedia.annotation.FormField;
 
 //------------------------------------------------------------------------------
@@ -27,7 +28,8 @@ import net.mpimedia.annotation.FormField;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor 
+@CustomEntity( )
 public class Member extends BaseEntity implements Serializable {
 	/**
 	 * 

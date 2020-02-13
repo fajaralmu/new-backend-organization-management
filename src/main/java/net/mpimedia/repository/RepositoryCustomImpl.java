@@ -7,7 +7,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
 
+import org.hibernate.Criteria;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +114,13 @@ public class RepositoryCustomImpl<T> implements RepositoryCustom<T> {
 
 		}
 		return object;
+	}
+
+	@Override
+	public List<T> filterAndSort(CriteriaQuery<?> criteriaQuery, Class<?> objectClass) { 
+		Query query = entityManager.createQuery(criteriaQuery);
+		List<T> resultList = query.getResultList();
+		return resultList;
 	}
 
 }
