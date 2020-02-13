@@ -19,6 +19,7 @@
         </head>
         <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
+            <input type="hidden" id="rootPath" value="${baseResourcePath }"/>
             <div id="root"></div>
             <script>!function(l){function e(e){for(var r,t,n=e[0],o=e[1],u=e[2],f=0,i=[];f
                 <n.length;f++)t=n[f],p[t]&&i.push(p[t][0]),p[t]=0;for(r in o)Object.prototype.hasOwnProperty.call(o,r)&&(l[r]=o[r]);for(s&&s(e);i.length;)i.shift()();return c.push.apply(c,u||[]),a()}function a(){for(var e,r=0;r
@@ -27,6 +28,6 @@
                             <r.length;o++)e(r[o]);var s=n;a()}([])
                             </script>
                             <script src="${baseResourcePath }/static/js/1.727e89aa.chunk.js"></script>
-                            <script src="${baseResourcePath }/static/js/main.1df7f57c.chunk.js"></script>
+                            <script src="${baseResourcePath }/static/js/main.8dcb02e7.chunk.js"></script>
                         </body>
                     </html>
