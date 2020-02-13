@@ -6,6 +6,7 @@
 
  
  
+ 
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -29,6 +30,6 @@
                             <r.length;o++)e(r[o]);var s=n;a()}([])
                             </script>
                             <script src="${baseResourcePath }/static/js/1.727e89aa.chunk.js"></script>
-                            <script src="${baseResourcePath }/static/js/main.f5601d19.chunk.js"></script>
+                            <script src="${baseResourcePath }/static/js/main.bb4c283d.chunk.js"></script>
                         </body>
                     </html>

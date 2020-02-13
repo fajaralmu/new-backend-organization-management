@@ -20,7 +20,7 @@ public class SchedulerService {
 	@Autowired
 	private TemporaryDataService temporaryDataService;
 	
-	private static final Long MAX_IDLE_TIME = 60000L;
+	private static final Long MAX_IDLE_TIME = 120000L;
 	
 	@PostConstruct
 	public void init() {

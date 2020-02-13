@@ -48,6 +48,7 @@ public class WebResponse implements Serializable {
 	public WebResponse(String code, String message) {
 		this.code = code;
 		this.message = message;
+		this.date = new Date();
 	}
 	public static WebResponse failed() {
 		return   failed("INVALID REQUEST");
