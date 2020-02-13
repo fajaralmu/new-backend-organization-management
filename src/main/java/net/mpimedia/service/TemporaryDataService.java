@@ -64,6 +64,7 @@ public class TemporaryDataService {
 		List<Division> divisionFiltered = new ArrayList<>();
 
 		for (Division division : divisions) {
+			
 			if (division.getInstitution().getId().equals(institution.getId())) {
 				divisionFiltered.add(division);
 			}
@@ -75,6 +76,7 @@ public class TemporaryDataService {
 	private Division filterById(long id) {
 
 		for (Division division : divisions) {
+			
 			if (division.getId().equals(id)) {
 				return division;
 			}
@@ -86,8 +88,11 @@ public class TemporaryDataService {
 	public Division getById(long divisionId) {
 
 		if (divisions.size() == 0) {
+			
 			try {
+				refresh();
 				return divisionRepository.findById(divisionId).get();
+		
 			} catch (Exception e) {
 				return null;
 			}

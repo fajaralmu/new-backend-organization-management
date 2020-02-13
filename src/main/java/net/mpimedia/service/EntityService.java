@@ -80,6 +80,8 @@ public class EntityService {
 	private PositionRepository positionRepository;
 	@Autowired
 	private SessionService sessionService;
+	@Autowired
+	private TemporaryDataService temporaryDataService;
 
 	@PostConstruct
 	public void init() {
@@ -140,59 +142,71 @@ public class EntityService {
 	}
 
 	private WebResponse savePosition(Position entity, boolean newRecord) {
+		
 		entity = (Position) copyNewElement(entity, newRecord);
 		Position savedEntity = positionRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
 	private WebResponse saveEvent(Event entity, boolean newRecord) {
+		
 		entity = (Event) copyNewElement(entity, newRecord);
 		Event savedEntity = eventRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
 	private WebResponse saveSection(Section section, boolean newRecord) {
+		
 		section = (Section) copyNewElement(section, newRecord);
 		Section newSection = sectionRepository.save(section);
 		return WebResponse.builder().entity(newSection).build();
 	}
 
 	private WebResponse saveUser(User user, boolean newRecord) {
+		
 		user = (User) copyNewElement(user, newRecord);
 		User newUser = userRepository.save(user);
 		return WebResponse.builder().entity(newUser).build();
 	}
 
 	private WebResponse saveProgram(Program program, boolean newRecord) {
+		
 		program = (Program) copyNewElement(program, newRecord); 
 		Program newProgram = programRepository.save(program);
 		return WebResponse.builder().entity(newProgram).build();
 	}
 
 	private WebResponse saveMember(Member member, boolean newRecord) {
+		
 		member = (Member) copyNewElement(member, newRecord); 
 		Member newMember = memberRepository.save(member);
 		return WebResponse.builder().entity(newMember).build();
 	}
 
 	private WebResponse savePost(Post post, boolean newRecord) {
+		
 		post = (Post) copyNewElement(post, newRecord);
 		Post newPost = postRepository.save((post));
 		return WebResponse.builder().entity(newPost).build();
 	}
 
 	private Object copyNewElement(Object source, boolean newRecord) {
+		
 		Object result = EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);  
 		return result;
 	}
 
 	private WebResponse saveDivision(Division division, boolean newRecord) {
+		
 		division = (Division) copyNewElement(division, newRecord);
 		Division newDivision = divisionRepository.save(division);
+		
+		temporaryDataService.refresh();
 		return WebResponse.builder().entity(newDivision).build();
 	} 
 
 	private WebResponse saveInstitution(Institution institution, boolean newRecord) {
+		
 		institution = (Institution) copyNewElement(institution, newRecord);
 		Institution newInstitution = institutionRepository.save(institution);
 		return WebResponse.builder().entity(newInstitution).build();
@@ -204,7 +218,12 @@ public class EntityService {
 	}
 
 	public WebResponse filter(WebRequest request) {
-		
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		SessionData sessionData = sessionService.GetSessionData(request);
 		
 		if(request.getEntity() == null || sessionData.getUser() == null ) {
@@ -299,6 +318,7 @@ public class EntityService {
 	
 
 	public List<BaseEntity> getEntitiesBySql(String sql, Class<? extends BaseEntity> entityClass) {
+		
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		return EntityUtil.validateDefaultValue(entities);
 	}
@@ -433,8 +453,6 @@ public class EntityService {
 		
 		return stringBuilder.toString();	
 	}
-
-	
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
 			boolean exacts, BaseEntity rootFilterEntity) {
@@ -743,9 +761,7 @@ public class EntityService {
 		}
 	}
 	
-
-	 
-	private static String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass, BaseEntity rootFilterEntity) {
+   private static String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass, BaseEntity rootFilterEntity) {
  
 		log.info("CRITERIA-FILTER: {}",filter);
 		
