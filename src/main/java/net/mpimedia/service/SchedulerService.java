@@ -25,7 +25,7 @@ public class SchedulerService {
 	@PostConstruct
 	public void init() {
 		log.info("////////////////SCHEDULER SERVICE////////////////");
-		LogProxyFactory.setLoggers(this);
+		//LogProxyFactory.setLoggers(this);
 		
 		this.start();
 		this.temporaryDataService.init();
