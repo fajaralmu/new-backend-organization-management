@@ -17,6 +17,7 @@ public class AppController {
 	public String main(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		model.addAttribute("baseResourcePath", request.getContextPath().concat("/res/app"));
+		model.addAttribute("basePath", request.getContextPath() );
 		return "app/default";
 	}
 }

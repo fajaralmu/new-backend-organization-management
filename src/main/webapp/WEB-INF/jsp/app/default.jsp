@@ -19,7 +19,7 @@
         </head>
         <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
-            <input type="hidden" id="rootPath" value="${baseResourcePath }"/>
+            <input type="hidden" id="rootPath" value="${basePath }"/>
             <div id="root"></div>
             <script>!function(l){function e(e){for(var r,t,n=e[0],o=e[1],u=e[2],f=0,i=[];f
                 <n.length;f++)t=n[f],p[t]&&i.push(p[t][0]),p[t]=0;for(r in o)Object.prototype.hasOwnProperty.call(o,r)&&(l[r]=o[r]);for(s&&s(e);i.length;)i.shift()();return c.push.apply(c,u||[]),a()}function a(){for(var e,r=0;r
