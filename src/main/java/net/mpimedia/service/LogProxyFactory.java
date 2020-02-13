@@ -18,36 +18,35 @@ import lombok.extern.slf4j.Slf4j;
 public class LogProxyFactory {
 
 	private static final DefaultParameterNameDiscoverer discoverer = new DefaultParameterNameDiscoverer();
-	
+
 	public static void setLoggers(Object obj) {
-		
+
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			Autowired annotated = field.getAnnotation(Autowired.class);
-			if(annotated == null) {
+			if (annotated == null) {
 				continue;
 			}
 			field.setAccessible(true);
 			try {
-				Object fieldValue = field.get(obj); 
+				Object fieldValue = field.get(obj);
 				boolean isInterface = fieldValue.getClass().isInterface();
-				boolean repo = fieldValue.getClass().getSuperclass()!=null &&
-							fieldValue.getClass().getSuperclass().equals(JpaRepository .class);
-				 
-				if(isInterface || repo) {
+				boolean repo = fieldValue.getClass().getSuperclass() != null
+						&& fieldValue.getClass().getSuperclass().equals(JpaRepository.class);
+
+				if (isInterface || repo) {
 					continue;
 				}
 				field.set(obj, logWrapper(fieldValue));
-			} catch (Exception e) { 
+			} catch (Exception e) {
 				continue;
 			}
 		}
-		
+
 	}
-	
+
 	public static Object logWrapper(Object obj) {
-		
-		
+
 		ProxyFactory proxyFactory = new ProxyFactory(obj);
 		Logger logger = LoggerFactory.getLogger(obj.getClass());
 		MethodInterceptor mi = new MethodInterceptor() {
@@ -61,40 +60,46 @@ public class LogProxyFactory {
 				 */
 
 				Object methodName = invocation.getMethod().getName();
-				logger.info("=========>[Execute Method: {}]", methodName);  
+				logger.info("=========>[Execute Method: {}]", methodName);
 				try {
-				/**
-				 * prints parameters of the method
-				 */
-				String[] params = discoverer.getParameterNames(invocation.getMethod()); 
-				if(params == null) {
-					params = new String[] {"arg0"};
-				}
-				
-				Object[] arguments = invocation.getArguments();
-				if(null == arguments || arguments.length == 0) {
-					logger.info("[No Argument]");
-				}else
-					for (int i = 0; i < arguments.length; i++) {
-						String parameterName = params[i] == null ? "arg" + i : params[i];
-						logger.info("[argument{}] {}:{}",i, parameterName, arguments[i]);
+					/**
+					 * prints parameters of the method
+					 */
+					String[] params = discoverer.getParameterNames(invocation.getMethod());
+					if (params == null) {
+						params = new String[] { "arg0" };
 					}
-				}catch(Exception ex) {
-					System.out.println("[ERROR] logging "+methodName);
+
+					Object[] arguments = invocation.getArguments();
+					if (null == arguments || arguments.length == 0) {
+						logger.info("[No Argument]");
+					} else {
+						try {
+							for (int i = 0; i < arguments.length; i++) {
+								String parameterName = params[i] == null ? "arg" + i : params[i];
+								logger.info("[argument{}] {}:{}", i, parameterName, arguments[i]);
+							}
+						} catch (Exception e) {
+
+							log.error("error getting argument: {}", e);
+						}
+					}
+				} catch (Exception ex) {
+					System.out.println("[ERROR] logging " + methodName);
 				}
 				try {
 					Object retVal = invocation.proceed();
 					Date end = new Date();
-					
+
 					logger.info("[{} has return value] : {}", invocation.getMethod().getName(), retVal);
-					logger.info("<=========[Finish Execute Method: {}] with success in {}ms", invocation.getMethod().getName(),
-							 end.getTime() - start.getTime());
-					
+					logger.info("<=========[Finish Execute Method: {}] with success in {}ms",
+							invocation.getMethod().getName(), end.getTime() - start.getTime());
+
 					return retVal;
 				} catch (Throwable e) {
 					Date end = new Date();
-					logger.error("<=========[Finish Execute Method: {}] with error in {}ms", invocation.getMethod().getName(),
-							 end.getTime() - start.getTime(), e);
+					logger.error("<=========[Finish Execute Method: {}] with error in {}ms",
+							invocation.getMethod().getName(), end.getTime() - start.getTime(), e);
 					throw e;
 				}
 			}

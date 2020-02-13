@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +41,10 @@ public class SessionData extends BaseEntity implements Remote, Serializable {
 	public String message;
 	@Column(name="request_day")
 	public Date requestDate;
+	
+	@Transient
+	@Builder.Default
+	private Date modifiedDate = new Date();
 	
 
 }

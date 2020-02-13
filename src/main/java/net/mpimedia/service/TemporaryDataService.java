@@ -23,13 +23,26 @@ public class TemporaryDataService {
 
 	private List<Division> divisions = new ArrayList<>();
 
-	@PostConstruct
+	 
 	public void init() {
-		log.info("Refresh divisions");
+		 
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				refresh();
+
+			}
+		});
+		thread.start();
+	}
+	
+	private void refresh() {
+		log.info("Refresh TemporaryDataService");
 
 		this.divisions = divisionRepository.findAll();
 
-		log.info("End Refresh Divisions");
+		log.info("End Refresh TemporaryDataService");
 	}
 
 	public List<Division> getDivision(User user) {
@@ -46,18 +59,7 @@ public class TemporaryDataService {
 		return getByInstitution(user.getInstitution());
 	}
 
-	public void refresh() {
-
-		Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				init();
-
-			}
-		});
-		thread.start();
-	}
+	
 
 	private List<Division> getByInstitution(Institution institution) {
 

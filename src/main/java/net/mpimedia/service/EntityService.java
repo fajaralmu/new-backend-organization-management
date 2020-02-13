@@ -201,7 +201,7 @@ public class EntityService {
 		division = (Division) copyNewElement(division, newRecord);
 		Division newDivision = divisionRepository.save(division);
 		
-		temporaryDataService.refresh();
+		temporaryDataService.init();
 		return WebResponse.builder().entity(newDivision).build();
 	} 
 

@@ -1,7 +1,9 @@
 package net.mpimedia.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class RegistryService {
 	public RegistryService() {
 		System.out.println("======================= RegistryService ===============================");
 	}
+	
+	
 
 	/**
 	 * get remote object
@@ -67,15 +71,21 @@ public class RegistryService {
 
 	public void putSession(String requestId, SessionData existingSessionData) {  
 		
+		if(existingSessionData != null) {
+			existingSessionData.setModifiedDate(new Date());
+		}
+		
 		sessions.put(requestId, existingSessionData);
 		
 		Thread thread = new Thread(new Runnable() { 
 				@Override
 				public void run() {
 					
-					log.info("Will save to DB");
+					log.info("Will save to DB: {}",existingSessionData);
 					
-					sessionDataRepository.save(existingSessionData);
+					if(existingSessionData!=null) {
+						sessionDataRepository.save(existingSessionData); 
+					}
 					
 					log.info("Saved to DB");
 					
@@ -84,6 +94,20 @@ public class RegistryService {
 		);
 		
 		thread.start();
+	}
+	
+	/**======================ACCESSED BY SCHEDULER================== **/
+	
+	public void clear() {
+		this.sessions.clear();
+	}
+	
+	public void remove(String key) {
+		this.sessions.remove(key);
+	}
+	
+	public Set<String> getSessionKeys(){
+		return this.sessions.keySet();
 	}
 
 	/**
