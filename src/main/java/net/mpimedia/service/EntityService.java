@@ -268,6 +268,15 @@ public class EntityService {
 			}
 			
 			Filter filter = request.getFilter();
+			
+			if(filter == null) {
+				filter= new Filter();
+			}
+			
+			if(filter.getFieldsFilter() == null) {
+				filter.setFieldsFilter(new HashMap<>());
+			}
+			
 			String[] sqlListAndCount = generateSqlByFilter(filter, entityClass, selectedDivision);
 			
 			String sql = sqlListAndCount[0];
@@ -426,17 +435,7 @@ public class EntityService {
 		return stringBuilder.toString();	
 	}
 
-	public static void main(String[] sdfdf) {
-		 
-		Division division = new Division();
-		division.setId(1L);
-		System.out.println("SQL: "+generateSqlByFilter(Filter.builder().fieldsFilter(new HashMap<String, Object>(){
-			{
-				this.put("sss", "sss");
-			}
-		}).build(), Event.class, division)[0]);
-
-	}
+	
 
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
 			boolean exacts, BaseEntity rootFilterEntity) {
@@ -576,7 +575,7 @@ public class EntityService {
 		String additionalFilter = "";
 		
 		if(rootFilterEntity != null) {			 
-			additionalFilter = addFilterById(entityClass,  rootFilterEntity.getId());
+			additionalFilter = addFilterById(entityClass, rootFilterEntity.getClass(),  rootFilterEntity.getId());
 		}
 		
 		if (filters == null || filters.size() == 0) {			
@@ -609,7 +608,7 @@ public class EntityService {
 		return result.concat(filters.size() > 0? " AND " : " ").concat(additionalFilter);
 	}
 
-	public static String addFilterById(Class baseEntityClass ,  Object id) {
+	public static String addFilterById(Class baseEntityClass , Class rootClass, Object id) {
 		 
 		CustomEntity customEntity = getClassAnnotation(baseEntityClass, CustomEntity.class);
 		if(customEntity == null || customEntity.rootFilter().length == 0) {
@@ -618,17 +617,12 @@ public class EntityService {
 		}
 		
 		String rootFilterName = customEntity.rootFilter()[customEntity.rootFilter().length-1];
-		Field rootFilterField =   EntityUtil.getDeclaredField(baseEntityClass, rootFilterName);
+		 
 		
-		if(rootFilterField == null) {
-			return "";
-		}
-		
-		try {
-			Class entityClass = rootFilterField.getType();
+		try { 
 			
-			String tableName = getTableName(entityClass);
-			Field idField = EntityUtil.getIdField(entityClass);
+			String tableName = getTableName(rootClass);
+			Field idField = EntityUtil.getIdField(rootClass);
 			
 			String idColumnName = getColumnName(idField);
 			
@@ -754,6 +748,8 @@ public class EntityService {
 	 
 	private static String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass, BaseEntity rootFilterEntity) {
  
+		log.info("CRITERIA-FILTER: {}",filter);
+		
 		Integer offset = filter.getPage() * filter.getLimit();
 		boolean withLimit = filter.getLimit() > 0;
 		boolean withOrder = filter.getOrderBy() != null && filter.getOrderType() != null
@@ -787,6 +783,18 @@ public class EntityService {
 	
 	static String doubleQuoteMysql(String str) {
 		return StringUtil.doubleQuoteMysql(str);
+	}
+	
+	public static void main(String[] sdfdf) {
+		 
+		Division division = new Division();
+		division.setId(1L);
+		System.out.println("SQL: "+generateSqlByFilter(Filter.builder().fieldsFilter(new HashMap<String, Object>(){
+			{
+				 
+			}
+		}).build(), Event.class, division)[0]);
+
 	}
 
 }
