@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -427,7 +428,13 @@ public class EntityService {
 
 	public static void main(String[] sdfdf) {
 		 
-		System.out.println("SQL: "+createLeftJoinSQL(Event.class));
+		Division division = new Division();
+		division.setId(1L);
+		System.out.println("SQL: "+generateSqlByFilter(Filter.builder().fieldsFilter(new HashMap<String, Object>(){
+			{
+				this.put("sss", "sss");
+			}
+		}).build(), Event.class, division)[0]);
 
 	}
 
@@ -507,14 +514,14 @@ public class EntityService {
 
 			Field field = getFieldByName(key, fields);
 
-			if (field == null) {
-				
+			if (field == null) {				
 				log.warn("!!!!!!!Field Not Found :" + key);
 				continue;
+				
 			}
-			if (field.getAnnotation(Column.class) != null) {
-			
+			if (field.getAnnotation(Column.class) != null) {			
 				columnName = getColumnName(field);
+				
 			}
 
 			StringBuilder sqlItem = new StringBuilder(doubleQuoteMysql(tableName ).concat(".").concat( columnName));
@@ -557,8 +564,7 @@ public class EntityService {
 			if (itemContains) {
 				sqlItem = sqlItem.append(" LIKE '%" ).append(filter.get(rawKey)).append("%' ");
 				
-			} else if (itemExacts) {
-				
+			} else if (itemExacts) {				
 				sqlItem  = sqlItem.append(" = '").append(filter.get(rawKey)).append("' ");
 			}
 			
@@ -569,39 +575,76 @@ public class EntityService {
 		
 		String additionalFilter = "";
 		
-		if(rootFilterEntity != null) {
-			additionalFilter = addFilterById(rootFilterEntity.getClass() , rootFilterEntity.getId());
+		if(rootFilterEntity != null) {			 
+			additionalFilter = addFilterById(entityClass,  rootFilterEntity.getId());
 		}
 		
-		if (filters == null || filters.size() == 0) {
+		if (filters == null || filters.size() == 0) {			
 			
-			 if(rootFilterEntity != null) { 
-				 
+			 if(rootFilterEntity != null && additionalFilter.isEmpty() == false) { 				 
 				return "WHERE ".concat(additionalFilter);
 			}
 			
 			return "";
 			
 		}
-		return " WHERE " + String.join(" AND ", filters).concat(" AND ").concat(additionalFilter);
+		
+		String whereClause = "";
+		
+		if(filters.size() > 0) {
+			whereClause = String.join(" AND ", filters);
+		}
+		
+		String result = " WHERE " + whereClause;
+		
+		if(additionalFilter.isEmpty()) {
+			
+			if(filters.size() == 0) {
+				return "";
+				
+			}
+			return result;
+		}
+		
+		return result.concat(filters.size() > 0? " AND " : " ").concat(additionalFilter);
 	}
 
-	public static String addFilterById(Class entityClass, Object id) {
+	public static String addFilterById(Class baseEntityClass ,  Object id) {
 		 
+		CustomEntity customEntity = getClassAnnotation(baseEntityClass, CustomEntity.class);
+		if(customEntity == null || customEntity.rootFilter().length == 0) {
+			
+			return "";
+		}
 		
-		String tableName = getTableName(entityClass);
-		Field idField = EntityUtil.getIdField(entityClass);
+		String rootFilterName = customEntity.rootFilter()[customEntity.rootFilter().length-1];
+		Field rootFilterField =   EntityUtil.getDeclaredField(baseEntityClass, rootFilterName);
 		
-		String idColumnName = getColumnName(idField);
+		if(rootFilterField == null) {
+			return "";
+		}
 		
-		String filter = buildString(
-				doubleQuoteMysql(tableName).
-				concat(".").
-				concat(doubleQuoteMysql(idColumnName)).
-				concat("=").
-				concat("'"+id+"'"));
+		try {
+			Class entityClass = rootFilterField.getType();
+			
+			String tableName = getTableName(entityClass);
+			Field idField = EntityUtil.getIdField(entityClass);
+			
+			String idColumnName = getColumnName(idField);
+			
+			String filter = buildString(
+					doubleQuoteMysql(tableName).
+					concat(".").
+					concat(doubleQuoteMysql(idColumnName)).
+					concat("=").
+					concat("'"+id+"'"));
+			
+			return filter;
 		
-		return filter;
+		}catch (Exception e) {
+			// TODO: handle exception
+			return "";
+		}
 		
 	}
 	
@@ -709,7 +752,7 @@ public class EntityService {
 	
 
 	 
-	private String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass, BaseEntity rootFilterEntity) {
+	private static String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass, BaseEntity rootFilterEntity) {
  
 		Integer offset = filter.getPage() * filter.getLimit();
 		boolean withLimit = filter.getLimit() > 0;
@@ -717,7 +760,7 @@ public class EntityService {
 				&& !filter.getOrderBy().equals("") && !filter.getOrderType().equals("");
 		boolean contains = filter.isContains();
 		boolean exacts = filter.isExacts();
-		boolean withFilteredField = filter.getFieldsFilter().isEmpty() == false;
+		boolean withFilteredField = filter.getFieldsFilter() != null;
 
 		String orderType = filter.getOrderType();
 		String orderBy = filter.getOrderBy();
