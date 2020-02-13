@@ -20,7 +20,7 @@ import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.AdminService;
 import net.mpimedia.service.ApplicationService;
 import net.mpimedia.service.LogProxyFactory;
-import net.mpimedia.util.RestUtil;
+import net.mpimedia.service.RestUtil;
 
 @Slf4j
 @CrossOrigin
@@ -30,7 +30,9 @@ public class ApiAdminController {
 	
 	@Autowired
 	private AdminService adminService;
-	 
+	@Autowired
+	private RestUtil restUtil;
+
 
 	@PostConstruct
 	public void init() {
@@ -41,7 +43,7 @@ public class ApiAdminController {
 	public WebResponse generateappid(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return adminService.getEvent(RestUtil.populateRequest(webRequest, httpRequest));
+		return adminService.getEvent(restUtil.populateRequest(webRequest, httpRequest));
 	}
 	
 	 

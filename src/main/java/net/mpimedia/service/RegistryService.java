@@ -68,7 +68,7 @@ public class RegistryService {
 		return this.getModel(requestId);
 	}
 
-	public void putSession(String requestId, SessionData existingSessionData) {  
+	public void storeSessionData(String requestId, SessionData existingSessionData) {  
 		
 		if(existingSessionData != null) {
 			existingSessionData.setModifiedDate(new Date());
@@ -93,6 +93,17 @@ public class RegistryService {
 		);
 		
 		thread.start();
+	}
+	
+	public void refreshSession(String requestId) {
+		
+		log.info("Will refresh session: {}", requestId);
+		
+		SessionData sessionData = getModel(requestId);
+		
+		if(sessionData!=null) {
+			storeSessionData(requestId, sessionData);
+		}	
 	}
 	
 	/**======================ACCESSED BY SCHEDULER================== **/

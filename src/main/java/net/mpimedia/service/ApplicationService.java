@@ -44,7 +44,7 @@ public class ApplicationService {
 		response.setMessage(RandomChar);
 
 		if (!exist) {
-			registryService.putSession(RandomChar,
+			registryService.storeSessionData(RandomChar,
 					SessionData.builder().key(RandomChar).message(RandomChar).requestDate(new Date()).build());
 		}
 

@@ -20,7 +20,7 @@ import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.ApplicationService;
 import net.mpimedia.service.EntityService;
 import net.mpimedia.service.LogProxyFactory;
-import net.mpimedia.util.RestUtil;
+import net.mpimedia.service.RestUtil;
 
 @Slf4j
 @CrossOrigin
@@ -30,7 +30,8 @@ public class ApiEntityController {
 	
 	@Autowired
 	private EntityService entityService;
-	 
+	@Autowired
+	private RestUtil restUtil;
 
 	@PostConstruct
 	public void init() {
@@ -41,25 +42,25 @@ public class ApiEntityController {
 	public WebResponse add(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.addEntity(RestUtil.populateRequest(webRequest, httpRequest) , true);
+		return entityService.addEntity(restUtil.populateRequest(webRequest, httpRequest) , true);
 	}
 	@PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse update(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.addEntity(RestUtil.populateRequest(webRequest, httpRequest), false);
+		return entityService.addEntity(restUtil.populateRequest(webRequest, httpRequest), false);
 	}
 	@PostMapping(value = "/get",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse get(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.filter(RestUtil.populateRequest(webRequest, httpRequest));
+		return entityService.filter(restUtil.populateRequest(webRequest, httpRequest));
 	}
 	@PostMapping(value = "/delete",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse delete(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.delete(RestUtil.populateRequest(webRequest, httpRequest));
+		return entityService.delete(restUtil.populateRequest(webRequest, httpRequest));
 	}
 	
 	 

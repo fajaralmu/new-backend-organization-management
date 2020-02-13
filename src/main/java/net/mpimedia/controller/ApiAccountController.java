@@ -21,7 +21,7 @@ import net.mpimedia.service.AccountService;
 import net.mpimedia.service.AdminService;
 import net.mpimedia.service.ApplicationService;
 import net.mpimedia.service.LogProxyFactory;
-import net.mpimedia.util.RestUtil;
+import net.mpimedia.service.RestUtil;
 
 @Slf4j
 @CrossOrigin
@@ -31,6 +31,8 @@ public class ApiAccountController {
 
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private RestUtil restUtil;
 
 	@PostConstruct
 	public void init() {
@@ -41,28 +43,28 @@ public class ApiAccountController {
 	public WebResponse login(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		return accountService.DoLogin(RestUtil.populateRequest(webRequest, httpRequest));
+		return accountService.DoLogin(restUtil.populateRequest(webRequest, httpRequest));
 	}
 
 	@PostMapping(value = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse logout(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		return accountService.DoLogout(RestUtil.populateRequest(webRequest, httpRequest));
+		return accountService.DoLogout(restUtil.populateRequest(webRequest, httpRequest));
 	}
 
 	@PostMapping(value = "/setdivision", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse setdivision(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		return accountService.SetDivision(RestUtil.populateRequest(webRequest, httpRequest));
+		return accountService.SetDivision(restUtil.populateRequest(webRequest, httpRequest));
 	}
 
 	@PostMapping(value = "/divisions", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse divisions(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {
 
-		return accountService.GetDivisions(RestUtil.populateRequest(webRequest, httpRequest));
+		return accountService.GetDivisions(restUtil.populateRequest(webRequest, httpRequest));
 	}
 
 }

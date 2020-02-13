@@ -26,7 +26,7 @@ public class SessionService {
 				existingSessionData.setDivision(null);
 			}
 
-			registryService.putSession(requestId, existingSessionData);
+			registryService.storeSessionData(requestId, existingSessionData);
 			return true;
 		}
 
@@ -48,7 +48,7 @@ public class SessionService {
 		SessionData existingSessionData = registryService.getSessionData(requestId);
 
 		if (existingSessionData != null) {
-			registryService.putSession(requestId, session);
+			registryService.storeSessionData(requestId, session);
 			return true;
 		}
 
