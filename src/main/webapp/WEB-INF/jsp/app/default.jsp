@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%> 
  
+ 
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -27,6 +28,6 @@
                             <r.length;o++)e(r[o]);var s=n;a()}([])
                             </script>
                             <script src="${baseResourcePath }/static/js/1.727e89aa.chunk.js"></script>
-                            <script src="${baseResourcePath }/static/js/main.cbd5b73c.chunk.js"></script>
+                            <script src="${baseResourcePath }/static/js/main.7524431e.chunk.js"></script>
                         </body>
                     </html>

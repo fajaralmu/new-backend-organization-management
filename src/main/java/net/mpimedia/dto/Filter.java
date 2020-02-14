@@ -44,5 +44,7 @@ public class Filter implements Serializable {
 	
 	private Integer monthTo;
 	private Integer yearTo; 
+	
+	private String entryPoint;
 
 }

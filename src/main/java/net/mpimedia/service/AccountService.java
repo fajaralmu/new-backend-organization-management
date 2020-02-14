@@ -9,14 +9,20 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.Division;
+import net.mpimedia.entity.Program;
+import net.mpimedia.entity.Section;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
+import net.mpimedia.repository.ProgramRepository;
+import net.mpimedia.repository.SectionRepository;
 import net.mpimedia.repository.UserRepository;
 
 @Service
+@Slf4j
 public class AccountService {
 	@Autowired
 	private UserRepository userRepository;
@@ -24,6 +30,10 @@ public class AccountService {
 	private TemporaryDataService temporaryDataService;
 	@Autowired
 	private SessionService sessionService ;
+	@Autowired
+	private ProgramRepository programRepository;
+	@Autowired
+	private SectionRepository sectionRepository;
 
 	@PostConstruct
 	public void init() {
@@ -69,6 +79,45 @@ public class AccountService {
 
 		return WebResponse.failed();
 	}
+	
+	public void updateSelectedDivision(SessionData sessionData) {
+		
+		if(sessionData.getDivision() == null) {
+			log.error("NO DIVISION FOUND");
+			return;
+		}
+		
+		new Thread(()->{
+			Thread thread1 = new Thread(() ->{ 
+				
+				log.info("Refresh programs from database for sessionKey: {}", sessionData.getKey());
+			
+				List<Program> programs = programRepository.getProgramsByDivisionId(sessionData.getDivision().getId());
+				sessionData.setPrograms(programs); 
+				 
+			}); 
+			Thread thread2 = new Thread(() ->{ 
+				
+				log.info("Refresh sections from database for sessionKey: {}", sessionData.getKey());
+				
+				List<Section> sections = sectionRepository.findByDivision(sessionData.getDivision());
+				sessionData.setSections(sections); 
+			 
+			}); 
+			thread1.start();
+			thread2.start();
+			
+			try {
+				thread1.join(); 
+				thread2.join();
+			} catch (InterruptedException e) {
+				log.error("Thread interrupted: {}",e);
+				e.printStackTrace();
+			}
+			sessionService.updateSessionData(sessionData.getKey(), sessionData); 
+		})
+		.start();
+	}
 
 	public WebResponse GetDivisions(WebRequest webRequest) {
 		SessionData sessionData = this.sessionService.GetSessionData(webRequest);
@@ -92,18 +141,22 @@ public class AccountService {
 	}
 
 	public WebResponse SetDivision(WebRequest webRequest) {
-		SessionData sessionData = this.sessionService.GetSessionData(webRequest);
+		
+		SessionData sessionData = sessionService.GetSessionData(webRequest);
+		
 		if (null != sessionData && null != sessionData.getUser()) {
 			WebResponse response = WebResponse.success();
 			try {
 				 Division  division = temporaryDataService.getById(webRequest.getDivisionId());
 
 				if (division!=null) {
+					
 					response.setEntity(division );
 					sessionData.setDivision(division );
-					sessionService.updateSessionData(webRequest.getRequestId(), sessionData);
-
-					response.setSessionData(this.sessionService.GetSessionData(webRequest));
+					response.setSessionData(sessionData);
+					
+					updateSelectedDivision(sessionData);
+					
 					return response;
 				}
 

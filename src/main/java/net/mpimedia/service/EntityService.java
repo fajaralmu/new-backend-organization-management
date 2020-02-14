@@ -48,6 +48,7 @@ import net.mpimedia.repository.RegisteredRequestRepository;
 import net.mpimedia.repository.RepositoryCustomImpl;
 import net.mpimedia.repository.SectionRepository;
 import net.mpimedia.repository.UserRepository;
+import net.mpimedia.util.CollectionUtil;
 import net.mpimedia.util.EntityUtil;
 import net.mpimedia.util.StringUtil;
 @Service
@@ -82,6 +83,8 @@ public class EntityService {
 	private SessionService sessionService;
 	@Autowired
 	private TemporaryDataService temporaryDataService;
+	@Autowired
+	private AccountService accountService;
 
 	@PostConstruct
 	public void init() {
@@ -90,6 +93,18 @@ public class EntityService {
 
 	public WebResponse addEntity(WebRequest request, boolean newRecord) {
 
+		SessionData sessionData = sessionService.GetSessionData(request);
+		
+		if(request.getEntity() == null || sessionData.getUser() == null ) {
+			return WebResponse.failed("Unauthorized");
+		
+		}
+		
+		if(sessionData.getDivision() == null) {
+			return WebResponse.failed("Invalid Division");
+			
+		}
+		
 		try {
 			
 			switch (request.getEntity().toLowerCase()) {
@@ -110,7 +125,7 @@ public class EntityService {
 					return saveUser(request.getUser(), newRecord);
 	
 				case "program":
-					return saveProgram(request.getProgram(), newRecord);
+					return saveProgram(request.getProgram(), newRecord, sessionData);
 	
 				case "section":
 					return saveSection(request.getSection(), newRecord);
@@ -135,70 +150,66 @@ public class EntityService {
 
 	}
 
-	private WebResponse saveRegisteredRequest(RegisteredRequest registeredRequest, boolean newRecord) {
-		registeredRequest = (RegisteredRequest) copyNewElement(registeredRequest, newRecord);
-		RegisteredRequest newRegisteredRequest = registeredRequestRepository.save(registeredRequest);
+	private WebResponse saveRegisteredRequest(BaseEntity entity, boolean newRecord) {
+		entity =   copyNewElement(entity, newRecord);
+		BaseEntity newRegisteredRequest = registeredRequestRepository.save((RegisteredRequest) entity);
 		return WebResponse.builder().entity(newRegisteredRequest).build();
 	}
 
 	private WebResponse savePosition(Position entity, boolean newRecord) {
 		
-		entity = (Position) copyNewElement(entity, newRecord);
+		entity =  copyNewElement(entity, newRecord);
 		Position savedEntity = positionRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
 	private WebResponse saveEvent(Event entity, boolean newRecord) {
 		
-		entity = (Event) copyNewElement(entity, newRecord);
+		entity =   copyNewElement(entity, newRecord);
 		Event savedEntity = eventRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
 	private WebResponse saveSection(Section section, boolean newRecord) {
 		
-		section = (Section) copyNewElement(section, newRecord);
+		section =   copyNewElement(section, newRecord);
 		Section newSection = sectionRepository.save(section);
 		return WebResponse.builder().entity(newSection).build();
 	}
 
 	private WebResponse saveUser(User user, boolean newRecord) {
 		
-		user = (User) copyNewElement(user, newRecord);
+		user =   copyNewElement(user, newRecord);
 		User newUser = userRepository.save(user);
 		return WebResponse.builder().entity(newUser).build();
 	}
 
-	private WebResponse saveProgram(Program program, boolean newRecord) {
+	private WebResponse saveProgram(Program program, boolean newRecord, SessionData sessionData) {
 		
-		program = (Program) copyNewElement(program, newRecord); 
-		Program newProgram = programRepository.save(program);
+		program =   copyNewElement(program, newRecord); 
+		Program newProgram = programRepository.save(program);		
+		accountService.updateSelectedDivision(sessionData);
+		
 		return WebResponse.builder().entity(newProgram).build();
 	}
 
 	private WebResponse saveMember(Member member, boolean newRecord) {
 		
-		member = (Member) copyNewElement(member, newRecord); 
+		member =  copyNewElement(member, newRecord); 
 		Member newMember = memberRepository.save(member);
 		return WebResponse.builder().entity(newMember).build();
 	}
 
 	private WebResponse savePost(Post post, boolean newRecord) {
 		
-		post = (Post) copyNewElement(post, newRecord);
+		post =  copyNewElement(post, newRecord);
 		Post newPost = postRepository.save((post));
 		return WebResponse.builder().entity(newPost).build();
 	}
 
-	private Object copyNewElement(Object source, boolean newRecord) {
+ 	private WebResponse saveDivision(Division division, boolean newRecord) {
 		
-		Object result = EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);  
-		return result;
-	}
-
-	private WebResponse saveDivision(Division division, boolean newRecord) {
-		
-		division = (Division) copyNewElement(division, newRecord);
+		division =   copyNewElement(division, newRecord);
 		Division newDivision = divisionRepository.save(division);
 		
 		temporaryDataService.init();
@@ -218,15 +229,10 @@ public class EntityService {
 	}
 
 	public WebResponse filter(WebRequest request) {
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 		SessionData sessionData = sessionService.GetSessionData(request);
 		
-		if(request.getEntity() == null || sessionData.getUser() == null ) {
+		if(request.getEntity() == null ||sessionData == null || sessionData.getUser() == null ) {
 			return WebResponse.failed("Unauthorized");
 		
 		}
@@ -239,7 +245,18 @@ public class EntityService {
 		Division selectedDivision = sessionData.getDivision();
 		
 		Class<? extends BaseEntity> entityClass = null;
+		
+		Filter filter = request.getFilter();
+		
+		if(filter == null) {
+			filter= new Filter();
+		}
+		if(filter.getFieldsFilter() == null) {
+			filter.setFieldsFilter(new HashMap<>());
+		}
 
+		final boolean inputFieldEntryPoint = "inputField".equals(filter.getEntryPoint());
+		
 		try {
 			switch (request.getEntity().toLowerCase()) {
 			
@@ -247,7 +264,7 @@ public class EntityService {
 					entityClass = Institution.class;
 					break;
 	
-				case "division":
+				case "division": 
 					entityClass = Division.class;
 					break;
 	
@@ -264,10 +281,16 @@ public class EntityService {
 					break;
 	
 				case "program":
+					if(inputFieldEntryPoint) {
+						return filterProgramFromInputField(filter.getFieldsFilter(),sessionData);
+					}
 					entityClass = Program.class;
 					break;
 	
 				case "section":
+					if(inputFieldEntryPoint) {
+						return filterSectionFromInputField(filter.getFieldsFilter(),sessionData);
+					}
 					entityClass = Section.class;
 					break;
 	
@@ -286,14 +309,7 @@ public class EntityService {
 					return WebResponse.failed();
 			}
 			
-			Filter filter = request.getFilter();
 			
-			if(filter == null) {
-				filter= new Filter();
-			}
-			if(filter.getFieldsFilter() == null) {
-				filter.setFieldsFilter(new HashMap<>());
-			}
 			
 			String[] sqlListAndCount = generateSqlByFilter(filter, entityClass, selectedDivision);
 			
@@ -315,12 +331,98 @@ public class EntityService {
 		}
 	}
 
-	
+	private WebResponse filterSectionFromInputField(Map<String, Object> fieldsFilter, SessionData sessionData) {
+
+		log.info("Will get section from sessions");
+		
+		WebResponse response = new WebResponse();
+		
+		if(sessionData.getPrograms() != null && fieldsFilter != null && fieldsFilter.get("name")!=null) {
+			
+			String filterName = (String) fieldsFilter.get("name");
+			
+			List<Program> filteredPrograms = CollectionUtil.filterList("name", filterName, sessionData.getSections());			
+			response.setEntities(CollectionUtil.convertList(filteredPrograms));
+		}
+		
+		return response; 
+	}
+
+	private WebResponse filterProgramFromInputField(Map filterFields, SessionData sessionData) {
+
+		log.info("Will get program from sessions");
+		
+		WebResponse response = new WebResponse();
+		
+		if(sessionData.getPrograms() != null && filterFields != null && filterFields.get("name")!=null) {
+			
+			String filterName = (String) filterFields.get("name");
+			
+			List<Program> filteredPrograms = CollectionUtil.filterList("name", filterName, sessionData.getPrograms());			
+			response.setEntities(CollectionUtil.convertList(filteredPrograms));
+		}
+		
+		return response;
+	}
 
 	public List<BaseEntity> getEntitiesBySql(String sql, Class<? extends BaseEntity> entityClass) {
 		
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		return EntityUtil.validateDefaultValue(entities);
+	}
+	
+	public WebResponse delete(WebRequest request) {
+		Map<String, Object> filter = request.getFilter().getFieldsFilter();
+		
+		try {
+			
+			Long id = Long.parseLong(filter.get("id").toString());
+			switch (request.getEntity().toLowerCase()) {
+			case "institution":
+				institutionRepository.deleteById(id);
+				break;
+			case "division":
+				divisionRepository.deleteById(id);
+				break;
+			case "post":
+				postRepository.deleteById(id);
+				break;
+			case "member":
+				memberRepository.deleteById(id);
+				break;
+			case "user":
+				userRepository.deleteById(id);
+				break;
+			case "program":
+				programRepository.deleteById(id);
+				break;
+			case "section":
+				sectionRepository.deleteById(id);
+				break;
+			case "event":
+				eventRepository.deleteById(id);
+				break;
+			case "registeredrequest":
+				registeredRequestRepository.deleteById(id);
+			case "position":
+				positionRepository.deleteById(id);
+			default:
+				return WebResponse.failed();
+				
+			}
+			
+			return WebResponse.builder().code("00").message("deleted successfully").build();
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return WebResponse.builder().code("01").message("failed").build();
+		}
+	}
+	
+	private static <T> T copyNewElement(Object source, boolean newRecord) {
+		
+		Object result = EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);  
+		return (T) result;
 	}
 
 	private static Field getFieldByName(String name, List<Field> fields) {
@@ -713,53 +815,7 @@ public class EntityService {
 		return entityClass.getSimpleName().toLowerCase();
 	}
 
-	public WebResponse delete(WebRequest request) {
-		Map<String, Object> filter = request.getFilter().getFieldsFilter();
-		
-		try {
-			
-			Long id = Long.parseLong(filter.get("id").toString());
-			switch (request.getEntity().toLowerCase()) {
-			case "institution":
-				institutionRepository.deleteById(id);
-				break;
-			case "division":
-				divisionRepository.deleteById(id);
-				break;
-			case "post":
-				postRepository.deleteById(id);
-				break;
-			case "member":
-				memberRepository.deleteById(id);
-				break;
-			case "user":
-				userRepository.deleteById(id);
-				break;
-			case "program":
-				programRepository.deleteById(id);
-				break;
-			case "section":
-				sectionRepository.deleteById(id);
-				break;
-			case "event":
-				eventRepository.deleteById(id);
-				break;
-			case "registeredrequest":
-				registeredRequestRepository.deleteById(id);
-			case "position":
-				positionRepository.deleteById(id);
-			default:
-				return WebResponse.failed();
-				
-			}
-			
-			return WebResponse.builder().code("00").message("deleted successfully").build();
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return WebResponse.builder().code("01").message("failed").build();
-		}
-	}
+	
 	
    private static String[] generateSqlByFilter(Filter filter, Class<? extends BaseEntity> entityClass, BaseEntity rootFilterEntity) {
  

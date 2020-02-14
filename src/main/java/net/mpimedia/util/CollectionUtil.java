@@ -1,13 +1,16 @@
 package net.mpimedia.util;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.entity.BaseEntity;
 
+@Slf4j
 public class CollectionUtil {
+	
 	public static <T> List<T> arrayToList(T[] array) {
 		List<T> list = new ArrayList<T>();
 		for (T t : array) {
@@ -30,6 +33,37 @@ public class CollectionUtil {
 		return list;
 	}
  
+	
+	public static List filterList(String fieldName, String value, final List list) {
+		
+		List result = new ArrayList<>();
+		
+		if(list!=null && value !=null && fieldName!=null) {
+			
+			for (Object object : list) {
+				Field field =  EntityUtil.getDeclaredField(object.getClass(), fieldName);
+				
+				if(null == field) {
+					continue;
+				}
+				
+				field.setAccessible(true);
+				
+				try {
+					Object fieldValue = field.get(object);
+					if(fieldValue != null && fieldValue.toString().toLowerCase().contains(value.toLowerCase())) {
+						result.add(object);
+					}
+					
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					log.info("Error getting value from field: {}", e);
+					continue;
+				}
+			}
+		
+		}
+		return result;
+	}
 
 	public static <T> List<T> convertList(List list) {
 		List<T> newList = new ArrayList<T>();

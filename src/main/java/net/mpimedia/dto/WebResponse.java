@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +20,7 @@ import net.mpimedia.entity.User;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor 
 public class WebResponse implements Serializable {
 
 	/**

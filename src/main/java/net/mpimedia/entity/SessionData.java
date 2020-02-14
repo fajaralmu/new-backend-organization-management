@@ -3,6 +3,7 @@ package net.mpimedia.entity;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +48,12 @@ public class SessionData extends BaseEntity implements Remote, Serializable {
 	@Transient
 	@Builder.Default
 	private Date modifiedDate = new Date();
+	@Transient
+	@JsonIgnore
+	private List<Program> programs;
+	@Transient
+	@JsonIgnore
+	private List<Section> sections;
 	
 
 }
