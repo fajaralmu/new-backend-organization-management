@@ -84,8 +84,11 @@ public class AccountService {
 
 			return response;
 		}
-
-		return WebResponse.failed();
+		
+		if(null != sessionData && null == sessionData.getUser())
+			return WebResponse.invalidSession();
+		else
+			return WebResponse.failed();
 	}
 
 	public WebResponse SetDivision(WebRequest webRequest) {

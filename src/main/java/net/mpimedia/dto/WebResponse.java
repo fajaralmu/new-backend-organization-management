@@ -64,4 +64,7 @@ public class WebResponse implements Serializable {
 	public static WebResponse success() {
 		return new WebResponse("00", "SUCCESS");
 	}
+	public static WebResponse invalidSession() { 
+		return new WebResponse("02","Invalid Session");
+	}
 }
