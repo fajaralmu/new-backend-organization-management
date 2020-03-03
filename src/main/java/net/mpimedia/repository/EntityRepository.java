@@ -89,8 +89,9 @@ public class EntityRepository {
 					return false;
 				}
 				
-			} catch (IllegalArgumentException | IllegalAccessException e) { 
+			} catch (Exception e) { 
 				e.printStackTrace();
+				return false;
 			}
 			
 		}
@@ -123,9 +124,10 @@ public class EntityRepository {
 			if (field.getAnnotation(Autowired.class) == null) {
 				continue;
 			}
-			Class<?> fieldClass = field.getType();
-
-			Class<?> originalEntityClass = getGenericClassIndexZero(fieldClass);
+			
+			Class<?> fieldClass 			= field.getType(); 
+			Class<?> originalEntityClass 	= getGenericClassIndexZero(fieldClass);
+			
 			if (originalEntityClass.equals(entityClass)) {
 				try {
 					return (JpaRepository) field.get(this);
@@ -158,10 +160,19 @@ public class EntityRepository {
 		return null;
 	}
 
-	public void deleteById(Long id, Class<? extends BaseEntity> class1) {
+	public boolean deleteById(Long id, Class<? extends BaseEntity> class1) {
 		log.info("Will delete entity: {}, id: {}", class1.getClass(), id);
-		JpaRepository repository = findRepo(class1);
-		repository.deleteById(id);
+		
+		try {
+			
+			JpaRepository repository = findRepo(class1);
+			repository.deleteById(id);
+			
+			return true;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
