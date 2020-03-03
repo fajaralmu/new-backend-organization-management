@@ -38,17 +38,10 @@ import net.mpimedia.entity.RegisteredRequest;
 import net.mpimedia.entity.Section;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
-import net.mpimedia.repository.DivisionRepository;
-import net.mpimedia.repository.EventRepository;
+import net.mpimedia.repository.EntityRepository;
 import net.mpimedia.repository.InstitutionRepository;
-import net.mpimedia.repository.MemberRepository;
-import net.mpimedia.repository.PositionRepository;
-import net.mpimedia.repository.PostRepository;
 import net.mpimedia.repository.ProgramRepository;
-import net.mpimedia.repository.RegisteredRequestRepository;
 import net.mpimedia.repository.RepositoryCustomImpl;
-import net.mpimedia.repository.SectionRepository;
-import net.mpimedia.repository.UserRepository;
 import net.mpimedia.util.CollectionUtil;
 import net.mpimedia.util.EntityUtil;
 import net.mpimedia.util.LogProxyFactory;
@@ -58,36 +51,20 @@ import net.mpimedia.util.StringUtil;
 public class EntityService {
 
 	@Autowired
-	private PostRepository postRepository;
-	@Autowired
-	private DivisionRepository divisionRepository;
-	@Autowired
-	private InstitutionRepository institutionRepository;
-	@Autowired
-	private MemberRepository memberRepository;
-	@Autowired
-	private RepositoryCustomImpl repositoryCustom;
-	@Autowired
-	private ProgramRepository programRepository;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private SectionRepository sectionRepository;
-	@Autowired
-	private EventRepository eventRepository;
-	@Autowired
-	private RegisteredRequestRepository registeredRequestRepository;
-	@Autowired
-	private FileService fileService;
-	@Autowired
-	private PositionRepository positionRepository;
+	private EntityRepository mainRepository;
 	@Autowired
 	private SessionService sessionService;
 	@Autowired
 	private TemporaryDataService temporaryDataService;
 	@Autowired
 	private AccountService accountService;
-
+	@Autowired
+	private ProgramRepository programRepository;
+	@Autowired
+	private InstitutionRepository institutionRepository;
+	@Autowired
+	private RepositoryCustomImpl repositoryCustom;
+	
 	@PostConstruct
 	public void init() {
 		LogProxyFactory.setLoggers(this);
@@ -155,14 +132,14 @@ public class EntityService {
 
 	private WebResponse saveRegisteredRequest(BaseEntity entity, boolean newRecord) {
 		entity =   copyNewElement(entity, newRecord);
-		BaseEntity newRegisteredRequest = registeredRequestRepository.save((RegisteredRequest) entity);
+		BaseEntity newRegisteredRequest = mainRepository.save((RegisteredRequest) entity);
 		return WebResponse.builder().entity(newRegisteredRequest).build();
 	}
 
 	private WebResponse savePosition(Position entity, boolean newRecord) {
 		
 		entity =  copyNewElement(entity, newRecord);
-		Position savedEntity = positionRepository.save(entity);
+		Position savedEntity = mainRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
@@ -180,28 +157,28 @@ public class EntityService {
 		}
 		
 		entity =   copyNewElement(entity, newRecord);
-		Event savedEntity = eventRepository.save(entity);
+		Event savedEntity = mainRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
 	private WebResponse saveSection(Section section, boolean newRecord) {
 		
 		section =   copyNewElement(section, newRecord);
-		Section newSection = sectionRepository.save(section);
+		Section newSection = mainRepository.save(section);
 		return WebResponse.builder().entity(newSection).build();
 	}
 
 	private WebResponse saveUser(User user, boolean newRecord) {
 		
 		user =   copyNewElement(user, newRecord);
-		User newUser = userRepository.save(user);
+		User newUser = mainRepository.save(user);
 		return WebResponse.builder().entity(newUser).build();
 	}
 
 	private WebResponse saveProgram(Program program, boolean newRecord, SessionData sessionData) {
 		
 		program =   copyNewElement(program, newRecord); 
-		Program newProgram = programRepository.save(program);		
+		Program newProgram = mainRepository.save(program);		
 		accountService.updateSelectedDivision(sessionData);
 		
 		return WebResponse.builder().entity(newProgram).build();
@@ -210,21 +187,21 @@ public class EntityService {
 	private WebResponse saveMember(Member member, boolean newRecord) {
 		
 		member =  copyNewElement(member, newRecord); 
-		Member newMember = memberRepository.save(member);
+		Member newMember = mainRepository.save(member);
 		return WebResponse.builder().entity(newMember).build();
 	}
 
 	private WebResponse savePost(Post post, boolean newRecord) {
 		
 		post =  copyNewElement(post, newRecord);
-		Post newPost = postRepository.save((post));
+		Post newPost = mainRepository.save((post));
 		return WebResponse.builder().entity(newPost).build();
 	}
 
  	private WebResponse saveDivision(Division division, boolean newRecord) {
 		
 		division =   copyNewElement(division, newRecord);
-		Division newDivision = divisionRepository.save(division);
+		Division newDivision = mainRepository.save(division);
 		
 		temporaryDataService.init();
 		return WebResponse.builder().entity(newDivision).build();
@@ -233,7 +210,7 @@ public class EntityService {
 	private WebResponse saveInstitution(Institution institution, boolean newRecord) {
 		
 		institution = (Institution) copyNewElement(institution, newRecord);
-		Institution newInstitution = institutionRepository.save(institution);
+		Institution newInstitution = mainRepository.save(institution);
 		return WebResponse.builder().entity(newInstitution).build();
 	}
 
@@ -396,30 +373,30 @@ public class EntityService {
 				institutionRepository.deleteById(id);
 				break;
 			case "division":
-				divisionRepository.deleteById(id);
+				mainRepository.deleteById(id, Division.class);
 				break;
 			case "post":
-				postRepository.deleteById(id);
+				mainRepository.deleteById(id, Post.class);
 				break;
 			case "member":
-				memberRepository.deleteById(id);
+				mainRepository.deleteById(id, Member.class);
 				break;
 			case "user":
-				userRepository.deleteById(id);
+				mainRepository.deleteById(id, User.class);
 				break;
 			case "program":
-				programRepository.deleteById(id);
+				mainRepository.deleteById(id, Program.class);
 				break;
 			case "section":
-				sectionRepository.deleteById(id);
+				mainRepository.deleteById(id, Section.class);
 				break;
 			case "event":
-				eventRepository.deleteById(id);
+				mainRepository.deleteById(id, Event.class);
 				break;
 			case "registeredrequest":
-				registeredRequestRepository.deleteById(id);
+				mainRepository.deleteById(id, RegisteredRequest.class);
 			case "position":
-				positionRepository.deleteById(id);
+				mainRepository.deleteById(id, Position.class);
 			default:
 				return WebResponse.failed();
 				
