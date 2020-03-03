@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.Column;
@@ -50,6 +51,7 @@ import net.mpimedia.repository.SectionRepository;
 import net.mpimedia.repository.UserRepository;
 import net.mpimedia.util.CollectionUtil;
 import net.mpimedia.util.EntityUtil;
+import net.mpimedia.util.LogProxyFactory;
 import net.mpimedia.util.StringUtil;
 @Service
 @Slf4j
@@ -131,6 +133,7 @@ public class EntityService {
 					return saveSection(request.getSection(), newRecord);
 	
 				case "event":
+					request.getEvent().setUser(sessionData.getUser());
 					return saveEvent(request.getEvent(), newRecord);
 					
 				case "registeredrequest":
@@ -164,6 +167,17 @@ public class EntityService {
 	}
 
 	private WebResponse saveEvent(Event entity, boolean newRecord) {
+		
+		Event event = (Event) entity;
+		
+		if(event.getProgram() == null) {
+			return WebResponse.failed("Selected Program Is NULL");
+		}else {
+			Optional<Program> selectedProgram = programRepository.findById(event.getProgram().getId());
+			if(selectedProgram.isPresent()==false) {
+				return WebResponse.failed("Invalid Program!");
+			}
+		}
 		
 		entity =   copyNewElement(entity, newRecord);
 		Event savedEntity = eventRepository.save(entity);

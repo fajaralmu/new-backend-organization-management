@@ -13,6 +13,7 @@ import net.mpimedia.entity.Event;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.repository.EventRepository;
 import net.mpimedia.util.CollectionUtil;
+import net.mpimedia.util.LogProxyFactory;
 
 @Service
 public class AdminService  {

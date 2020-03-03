@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.WebResponse;
+import net.mpimedia.util.LogProxyFactory;
 
 @Service
 public class RealtimeService2 {
@@ -29,7 +30,7 @@ public class RealtimeService2 {
 	}
 
 	public void sendProgress(double progress, String requestId) {
-		System.out.println(">>>>>>>>>>SEND PROGRESS:" + progress + " (" + requestId + ")");
+	//	System.out.println(">>>>>>>>>>SEND PROGRESS:" + progress + " (" + requestId + ")");
 		sendProgress(WebResponse.builder().requestId(requestId).percentage(progress).build());
 	}
 

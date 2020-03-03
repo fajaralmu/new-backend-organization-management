@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.ApplicationService;
-import net.mpimedia.service.LogProxyFactory;
+import net.mpimedia.util.LogProxyFactory;
 
 @Slf4j
 @CrossOrigin

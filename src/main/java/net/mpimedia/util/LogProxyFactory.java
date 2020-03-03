@@ -1,4 +1,4 @@
-package net.mpimedia.service;
+package net.mpimedia.util;
 
 import java.lang.reflect.Field;
 import java.util.Date;

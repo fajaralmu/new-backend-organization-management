@@ -20,8 +20,8 @@ import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.AccountService;
 import net.mpimedia.service.AdminService;
 import net.mpimedia.service.ApplicationService;
-import net.mpimedia.service.LogProxyFactory;
 import net.mpimedia.service.RestUtil;
+import net.mpimedia.util.LogProxyFactory;
 
 @Slf4j
 @CrossOrigin

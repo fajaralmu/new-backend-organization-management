@@ -20,6 +20,7 @@ import net.mpimedia.entity.User;
 import net.mpimedia.repository.ProgramRepository;
 import net.mpimedia.repository.SectionRepository;
 import net.mpimedia.repository.UserRepository;
+import net.mpimedia.util.LogProxyFactory;
 
 @Service
 @Slf4j

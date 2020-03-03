@@ -19,8 +19,8 @@ import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.ApplicationService;
 import net.mpimedia.service.EntityService;
-import net.mpimedia.service.LogProxyFactory;
 import net.mpimedia.service.RestUtil;
+import net.mpimedia.util.LogProxyFactory;
 
 @Slf4j
 @CrossOrigin

@@ -5,6 +5,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import net.mpimedia.util.LogProxyFactory;
+
 @Service
 public class ProgressService {
 	

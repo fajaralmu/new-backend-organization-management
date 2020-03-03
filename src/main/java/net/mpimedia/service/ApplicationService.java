@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.SessionData;
+import net.mpimedia.util.LogProxyFactory;
 
 @Service
 public class ApplicationService {
@@ -38,6 +39,8 @@ public class ApplicationService {
 				if (sessionData.getUser() != null) {
 					response.setLoggedIn(true);
 				}
+				
+				registryService.refreshSession(requestId);
 			}
 			response.setSessionData(sessionData);
 		}
@@ -49,7 +52,7 @@ public class ApplicationService {
 			registryService.storeSessionData(RandomChar,
 					SessionData.builder().key(RandomChar).message(RandomChar).requestDate(new Date()).build());
 		}
-
+		
 		return response;
 	}
 
