@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%> 
  
  
+ 
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -15,7 +16,7 @@
         <link rel="apple-touch-icon" href="${baseResourcePath }/logo192.png"/>
         <link rel="manifest" href="${baseResourcePath }/manifest.json"/>
         <title>Mahasiswa Pencinta Islam</title>
-        <link href="${baseResourcePath }/static/css/main.da5c9d5d.chunk.css" rel="stylesheet">
+        <link href="${baseResourcePath }/static/css/main.774188f1.chunk.css" rel="stylesheet">
         </head>
         <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -28,6 +29,6 @@
                             <r.length;o++)e(r[o]);var s=n;a()}([])
                             </script>
                             <script src="${baseResourcePath }/static/js/1.727e89aa.chunk.js"></script>
-                            <script src="${baseResourcePath }/static/js/main.7524431e.chunk.js"></script>
+                            <script src="${baseResourcePath }/static/js/main.97583bd1.chunk.js"></script>
                         </body>
                     </html>
