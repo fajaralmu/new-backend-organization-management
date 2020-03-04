@@ -76,6 +76,7 @@ public class EntityService {
 	private static final String SQL_KEYWORD_ORDERBY = " ORDER BY ";
 	private static final String SQL_KEYWORD_AND = " AND ";
 	private static final String SQL_KEYWORD_WHERE = " WHERE ";
+	private static final String SQL_KEYWORD_FROM = " from ";
 
 	@Autowired
 	private EntityRepository mainRepository;
@@ -95,7 +96,13 @@ public class EntityService {
 		LogProxyFactory.setLoggers(this);
 	}
 
-	public WebResponse addEntity(WebRequest request, boolean newRecord) {
+	/**
+	 * persist entity
+	 * @param request
+	 * @param newRecord
+	 * @return
+	 */
+	public WebResponse updateRecord(WebRequest request, boolean newRecord) {
 
 		SessionData sessionData = sessionService.GetSessionData(request);
 
@@ -207,6 +214,11 @@ public class EntityService {
 		return institutionRepository.findAll();
 	}
 
+	/**
+	 * search entity
+	 * @param request
+	 * @return
+	 */
 	public WebResponse filter(WebRequest request) {
 		log.info("filter :{}", request);
 
@@ -308,7 +320,13 @@ public class EntityService {
 			return WebResponse.failed();
 		}
 	}
-
+	
+	/**
+	 * if entry point: dynamic drop down input field
+	 * @param fieldsFilter
+	 * @param sessionData
+	 * @return
+	 */
 	private WebResponse filterSectionFromInputField(Map<String, Object> fieldsFilter, SessionData sessionData) { 
 		log.info("Will get section from sessions");
 
@@ -325,6 +343,12 @@ public class EntityService {
 		return response;
 	}
 
+	/**
+	 * if entry point: dynamic drop down input field
+	 * @param filterFields
+	 * @param sessionData
+	 * @return
+	 */
 	private WebResponse filterProgramFromInputField(Map filterFields, SessionData sessionData) { 
 		log.info("Will get program from sessions");
 
@@ -341,8 +365,9 @@ public class EntityService {
 		return response;
 	}
 
-	public List<BaseEntity> doFilterEntity(String sql, Class<? extends BaseEntity> entityClass) {
-
+	public List<BaseEntity> doFilterEntity(final String sql, Class<? extends BaseEntity> entityClass) {
+		log.info("Will perform querying to DB");
+		
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		return EntityUtil.validateDefaultValue(entities);
 	}
@@ -424,26 +449,17 @@ public class EntityService {
 		return columnName;
 	}
 
-	public static <T> T getClassAnnotation(Class<?> entityClass, Class annotation) {
-		try {
-			return (T) entityClass.getAnnotation(annotation);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	public static <T> T getFieldAnnotation(Field field, Class annotation) {
-		try {
-			return (T) field.getAnnotation(annotation);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
+	
+	/**
+	 * create LEFT JOIN Statement for one field only
+	 * @param entityClass
+	 * @param field
+	 * @return
+	 */
 	public static String createLeftJoinSql(Class entityClass, Field field) { 
 		log.info("Create item sql left join: " + entityClass + ", field: " + field);
 
-		JoinColumn joinColumn = getFieldAnnotation(field, JoinColumn.class);
+		JoinColumn joinColumn = EntityUtil.getFieldAnnotation(field, JoinColumn.class);
 
 		if (null == joinColumn) {
 			return "";
@@ -467,11 +483,16 @@ public class EntityService {
 
 	}
 
+	/**
+	 * create LEFT JOIN statement full object
+	 * @param entityClass
+	 * @return
+	 */
 	private static String createLeftJoinSQL(Class<? extends BaseEntity> entityClass) {
 
 		StringBuilder sql = new StringBuilder("");
 
-		CustomEntity customModel = getClassAnnotation(entityClass, CustomEntity.class);
+		CustomEntity customModel = EntityUtil.getClassAnnotation(entityClass, CustomEntity.class);
 
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
 		for (Field field : fields) {
@@ -498,6 +519,12 @@ public class EntityService {
 		return sql.toString();
 	}
 
+	/**
+	 * add join clause if class has root filter
+	 * @param entityClass
+	 * @param rootFilter
+	 * @return
+	 */
 	public static String validateRootFilter(Class entityClass, String[] rootFilter) {
 
 		StringBuilder stringBuilder = new StringBuilder("");
@@ -708,7 +735,7 @@ public class EntityService {
 
 	public static String addFilterById(Class baseEntityClass, Class rootClass, Object id) {
 
-		CustomEntity customEntity = getClassAnnotation(baseEntityClass, CustomEntity.class);
+		CustomEntity customEntity = EntityUtil.getClassAnnotation(baseEntityClass, CustomEntity.class);
 		if (customEntity == null || customEntity.rootFilter().length == 0) {
 
 			return "";
@@ -795,6 +822,8 @@ public class EntityService {
 			BaseEntity rootFilterEntity) {
 
 		log.info("CRITERIA-FILTER: {}", filter);
+		log.info("entity class: {}", entityClass);
+		log.info("root filter entity: {}", rootFilterEntity);
 
 		int		offset 				= filter.getPage() * filter.getLimit();
 		boolean withLimit 			= filter.getLimit() > 0;
@@ -834,7 +863,8 @@ public class EntityService {
 		String sql = buildString(
 				SQL_KEYWORD_SELECT, 
 				doubleQuoteMysql(tableName), 
-				".* from ", 
+				".*", 
+				SQL_KEYWORD_FROM,
 				doubleQuoteMysql(tableName),
 				joinSql, 
 				filterSQL, 
@@ -847,6 +877,9 @@ public class EntityService {
 				joinSql, 
 				filterSQL);
 
+		log.info("query select: {}", sql);
+		log.info("query count: {}", sqlCount);
+		
 		return new String[] { sql, sqlCount };
 	}
 

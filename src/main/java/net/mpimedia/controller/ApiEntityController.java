@@ -42,13 +42,13 @@ public class ApiEntityController {
 	public WebResponse add(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.addEntity(restUtil.populateRequest(webRequest, httpRequest) , true);
+		return entityService.updateRecord(restUtil.populateRequest(webRequest, httpRequest) , true);
 	}
 	@PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse update(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException {  
 		
-		return entityService.addEntity(restUtil.populateRequest(webRequest, httpRequest), false);
+		return entityService.updateRecord(restUtil.populateRequest(webRequest, httpRequest), false);
 	}
 	@PostMapping(value = "/get",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse get(@RequestBody WebRequest webRequest, HttpServletRequest httpRequest,

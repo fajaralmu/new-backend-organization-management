@@ -120,6 +120,22 @@ public class EntityUtil {
 //		return null;
 //	}
 
+	public static <T> T getClassAnnotation(Class<?> entityClass, Class annotation) {
+		try {
+			return (T) entityClass.getAnnotation(annotation);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static <T> T getFieldAnnotation(Field field, Class annotation) {
+		try {
+			return (T) field.getAnnotation(annotation);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	public static Field getDeclaredField(Class clazz, String fieldName) {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);
