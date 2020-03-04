@@ -56,7 +56,26 @@ public class EntityService {
 	private static final String FILTER_DATE_DAY = "DAY";
 	private static final String FILTER_DATE_MON1TH = "MONTH";
 	private static final String FILTER_DATE_YEAR = "YEAR";
-	private static final String SQL_RAW_DATE_FILTER = " ${MODE}(`${TABLE_NAME}`.`${COLUMN_NAME}`) = ${VALUE} ";;
+	
+	//placeholders
+	private static final String SQL_RAW_DATE_FILTER = " ${MODE}(`${TABLE_NAME}`.`${COLUMN_NAME}`) = ${VALUE} ";
+	private static final String PLACEHOLDER_SQL_FOREIGN_ID = "${FOREIGN_ID}";
+	private static final String PLACEHOLDER_SQL_JOIN_TABLE = "${JOIN_TABLE}";
+	private static final String PLACEHOLDER_SQL_ENTITY_TABLE = "${ENTITY_TABLE}";
+	private static final String PLACEHOLDER_SQL_JOIN_ID = "${JOIN_ID}";
+	private static final String PLACEHOLDER_SQL_RAW_JOIN_STATEMENT = " LEFT JOIN `${JOIN_TABLE}` ON  `${JOIN_TABLE}`.`${JOIN_ID}` = `${ENTITY_TABLE}`.`${FOREIGN_ID}` ";
+	private static final String PLACEHOLDER_SQL_TABLE_NAME = "${TABLE_NAME}";
+	private static final String PLACEHOLDER_SQL_MODE = "${MODE}";
+	private static final String PLACEHOLDER_SQL_COLUMN_NAME = "${COLUMN_NAME}";
+	private static final String PLACEHOLDER_SQL_VALUE = "${VALUE}";
+	
+	private static final String SQL_KEYWORDSET_SELECT_COUNT = " SELECT COUNT(*) from  ";
+	private static final String SQL_KEYWORD_SELECT = " SELECT "; 
+	private static final String SQL_KEYWORD_LIMIT = " LIMIT ";
+	private static final String SQL_KEYWORD_OFFSET = " OFFSET ";
+	private static final String SQL_KEYWORD_ORDERBY = " ORDER BY ";
+	private static final String SQL_KEYWORD_AND = " AND ";
+	private static final String SQL_KEYWORD_WHERE = " WHERE ";
 
 	@Autowired
 	private EntityRepository mainRepository;
@@ -421,8 +440,7 @@ public class EntityService {
 		}
 	}
 
-	public static String createLeftJoinSql(Class entityClass, Field field) {
-
+	public static String createLeftJoinSql(Class entityClass, Field field) { 
 		log.info("Create item sql left join: " + entityClass + ", field: " + field);
 
 		JoinColumn joinColumn = getFieldAnnotation(field, JoinColumn.class);
@@ -430,17 +448,20 @@ public class EntityService {
 		if (null == joinColumn) {
 			return "";
 		}
+ 
+		Class fieldClass 		= field.getType();
+		Field idForeignField 	= EntityUtil.getIdField(fieldClass);
 
-		String tableName = getTableName(entityClass);
-		Class fieldClass = field.getType();
-		String foreignID = joinColumn.name();
-		String joinTableName = getTableName(fieldClass);
-		Field idForeignField = EntityUtil.getIdField(fieldClass);
+		String joinTableName 	= getTableName(fieldClass);
+		String tableName 		= getTableName(entityClass);
+		String foreignID 		= joinColumn.name();
 
-		String sqlItem = " LEFT JOIN `${JOIN_TABLE}` ON  `${JOIN_TABLE}`.`${JOIN_ID}` = `${ENTITY_TABLE}`.`${FOREIGN_ID}` ";
 
-		sqlItem = sqlItem.replace("${FOREIGN_ID}", foreignID).replace("${JOIN_TABLE}", joinTableName)
-				.replace("${ENTITY_TABLE}", tableName).replace("${JOIN_ID}", getColumnName(idForeignField));
+		String sqlItem = PLACEHOLDER_SQL_RAW_JOIN_STATEMENT.
+				replace(PLACEHOLDER_SQL_FOREIGN_ID, foreignID).
+				replace(PLACEHOLDER_SQL_JOIN_TABLE, joinTableName).
+				replace(PLACEHOLDER_SQL_ENTITY_TABLE, tableName).
+				replace(PLACEHOLDER_SQL_JOIN_ID, getColumnName(idForeignField));
 
 		return sqlItem;
 
@@ -506,9 +527,9 @@ public class EntityService {
 	private static String createFilterSQL(Class entityClass, Map<String, Object> filter, boolean contains,
 			boolean exacts, BaseEntity rootFilterEntity) {
 
-		String tableName = getTableName(entityClass);
-		List<String> filters = new ArrayList<String>();
-		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
+		String tableName 		= getTableName(entityClass);
+		List<String> filters 	= new ArrayList<String>();
+		List<Field> fields 		= EntityUtil.getDeclaredFields(entityClass);
 
 		log.info("=======FILTER: {}", filter);
 
@@ -516,6 +537,7 @@ public class EntityService {
 			log.info("................." + rawKey + ":" + filter.get(rawKey));
 
 			String key = rawKey;
+			
 			if (filter.get(rawKey) == null)
 				continue;
 
@@ -523,15 +545,15 @@ public class EntityService {
 			boolean itemContains = contains;
 
 			if (rawKey.endsWith("[EXACTS]")) {
-				itemExacts = true;
-				itemContains = false;
-				key = rawKey.split("\\[EXACTS\\]")[0];
+				itemExacts 		= true;
+				itemContains 	= false;
+				key 			= rawKey.split("\\[EXACTS\\]")[0];
 			}
 
-			log.info("-------KEY:" + key);
+			log.info("Now KEY:" + key);
 
-			String[] multiKey = key.split(",");
-			boolean isMultiKey = multiKey.length > 1;
+			String[] multiKey 	= key.split(",");
+			boolean isMultiKey 	= multiKey.length > 1;
 
 			if (isMultiKey) {
 				key = multiKey[0];
@@ -539,9 +561,9 @@ public class EntityService {
 
 			String columnName = key;
 			// check if date
-			boolean dayFilter = rawKey.endsWith(DAY_SUFFIX);
+			boolean dayFilter 	= rawKey.endsWith(DAY_SUFFIX);
 			boolean monthFilter = rawKey.endsWith(MONTH_SUFFIX);
-			boolean yearFilter = rawKey.endsWith(YEAR_SUFFIX);
+			boolean yearFilter 	= rawKey.endsWith(YEAR_SUFFIX);
 
 			if (dayFilter || monthFilter || yearFilter) {
 
@@ -550,16 +572,16 @@ public class EntityService {
 				String sqlItem 		= SQL_RAW_DATE_FILTER;
 				
 				if (dayFilter) {
-					fieldName = key.replace(DAY_SUFFIX, "");
-					mode = FILTER_DATE_DAY;
+					fieldName 	= key.replace(DAY_SUFFIX, "");
+					mode 		= FILTER_DATE_DAY;
 
 				} else if (monthFilter) {
-					fieldName = key.replace(MONTH_SUFFIX, "");
-					mode = FILTER_DATE_MON1TH;
+					fieldName 	= key.replace(MONTH_SUFFIX, "");
+					mode 		= FILTER_DATE_MON1TH;
 
 				} else if (yearFilter) {
-					fieldName = key.replace(YEAR_SUFFIX, "");
-					mode = FILTER_DATE_YEAR;
+					fieldName	= key.replace(YEAR_SUFFIX, "");
+					mode 		= FILTER_DATE_YEAR;
 
 				}
 
@@ -573,12 +595,10 @@ public class EntityService {
 
 				columnName = getColumnName(field);
 				sqlItem = sqlItem
-						.replace("${TABLE_NAME}", tableName)
-						.replace("${MODE}", mode)
-						.replace("${COLUMN_NAME}", columnName)
-						.replace("${VALUE}", filter.get(key).toString());
-				
-				System.out.println("[debug] sql date: "+sqlItem);
+						.replace(PLACEHOLDER_SQL_TABLE_NAME, tableName)
+						.replace(PLACEHOLDER_SQL_MODE, mode)
+						.replace(PLACEHOLDER_SQL_COLUMN_NAME, columnName)
+						.replace(PLACEHOLDER_SQL_VALUE, filter.get(key).toString()); 
 				
 				filters.add(sqlItem);
 				continue;
@@ -600,9 +620,9 @@ public class EntityService {
 
 			if (field.getAnnotation(JoinColumn.class) != null || isMultiKey) {
 
-				Class fieldClass = field.getType();
-				String joinTableName = getTableName(fieldClass);
-				FormField formField = field.getAnnotation(FormField.class);
+				Class fieldClass 		= field.getType();
+				String joinTableName 	= getTableName(fieldClass);
+				FormField formField 	= field.getAnnotation(FormField.class);
 
 				try {
 					String referenceFieldName = formField.optionItemName();
@@ -611,19 +631,23 @@ public class EntityService {
 						referenceFieldName = multiKey[1];
 					}
 
-					Field fieldField = EntityUtil.getDeclaredField(fieldClass, referenceFieldName);
-					String fieldColumnName = getColumnName(fieldField);
+					Field 	fieldField 		= EntityUtil.getDeclaredField(fieldClass, referenceFieldName);
+					String 	fieldColumnName = getColumnName(fieldField);
 
 					if (fieldColumnName == null || fieldColumnName.equals("")) {
 						fieldColumnName = key;
 					}
 
-					sqlItem = sqlItem.append(
-							doubleQuoteMysql(joinTableName).concat(".").concat(doubleQuoteMysql(fieldColumnName)));
+					sqlItem = sqlItem
+							.append(doubleQuoteMysql(joinTableName))
+							.append(".")
+							.append(doubleQuoteMysql(fieldColumnName));
 
-				} catch (SecurityException e) {
+				} catch ( Exception e) {
+					
+					log.warn(e.getClass() + " " + e.getMessage() + " " + fieldClass);
 					e.printStackTrace();
-					log.warn("!!!!!" + e.getClass() + " " + e.getMessage() + " " + fieldClass);
+					
 					continue;
 				}
 
@@ -655,7 +679,7 @@ public class EntityService {
 		if (filters == null || filters.size() == 0) {
 
 			if (rootFilterEntity != null && additionalFilter.isEmpty() == false) {
-				return "WHERE ".concat(additionalFilter);
+				return SQL_KEYWORD_WHERE.concat(additionalFilter);
 			}
 
 			return "";
@@ -665,10 +689,10 @@ public class EntityService {
 		String whereClause = "";
 
 		if (filters.size() > 0) {
-			whereClause = String.join(" AND ", filters);
+			whereClause = String.join(SQL_KEYWORD_AND, filters);
 		}
 
-		String result = " WHERE " + whereClause;
+		String result = SQL_KEYWORD_WHERE.concat(whereClause);
 
 		if (additionalFilter.isEmpty()) {
 
@@ -679,7 +703,7 @@ public class EntityService {
 			return result;
 		}
 
-		return result.concat(filters.size() > 0 ? " AND " : " ").concat(additionalFilter);
+		return result.concat(filters.size() > 0 ? SQL_KEYWORD_AND : " ").concat(additionalFilter);
 	}
 
 	public static String addFilterById(Class baseEntityClass, Class rootClass, Object id) {
@@ -697,8 +721,11 @@ public class EntityService {
 
 			String idColumnName = getColumnName(idField);
 
-			String filter = buildString(doubleQuoteMysql(tableName).concat(".").concat(doubleQuoteMysql(idColumnName))
-					.concat("=").concat("'" + id + "'"));
+			String filter = doubleQuoteMysql(tableName)
+								.concat(".")
+								.concat(doubleQuoteMysql(idColumnName))
+								.concat("=")
+								.concat("'" + id + "'");
 
 			return filter;
 
@@ -723,19 +750,21 @@ public class EntityService {
 		if (idField == null) {
 			return null;
 		}
-		String columnName = idField.getName();
-		String tableName = getTableName(entityClass);
+		String columnName 	= idField.getName();
+		String tableName 	= getTableName(entityClass);
 
 		if (orderByField.getAnnotation(JoinColumn.class) != null) {
-			Class fieldClass = orderByField.getType();
-			tableName = getTableName(fieldClass);
+			
+			Class fieldClass 	= orderByField.getType();
 			FormField formField = orderByField.getAnnotation(FormField.class);
+			tableName 			= getTableName(fieldClass);
+			
 
 			try {
 				Field fieldField = fieldClass.getDeclaredField(formField.optionItemName());
 				columnName = getColumnName(fieldField);
 
-			} catch (NoSuchFieldException | SecurityException e) {
+			} catch ( Exception e) {
 				e.printStackTrace();
 				return null;
 			}
@@ -745,7 +774,7 @@ public class EntityService {
 
 		String orderField = doubleQuoteMysql(tableName).concat(".").concat(doubleQuoteMysql(columnName));
 
-		return buildString(" ORDER BY ", orderField, orderType);
+		return buildString(SQL_KEYWORD_ORDERBY, orderField, orderType);
 	}
 
 	private static String getTableName(Class entityClass) {
@@ -767,7 +796,7 @@ public class EntityService {
 
 		log.info("CRITERIA-FILTER: {}", filter);
 
-		Integer offset 				= filter.getPage() * filter.getLimit();
+		int		offset 				= filter.getPage() * filter.getLimit();
 		boolean withLimit 			= filter.getLimit() > 0;
 		boolean withOrder 			= filter.getOrderBy() != null && filter.getOrderType() != null
 				&& !filter.getOrderBy().equals("") && !filter.getOrderType().equals("");
@@ -777,25 +806,46 @@ public class EntityService {
 
 		String orderType 		= filter.getOrderType();
 		String orderBy 			= filter.getOrderBy();
-		String tableName 		= getTableName(entityClass);
 		String orderSQL 		= withOrder ? orderSQL(entityClass, orderType, orderBy) : "";
 
 		String limitOffsetSQL 	= "";
 		String filterSQL		= "";
+
+		String tableName 		= getTableName(entityClass);
 		String joinSql			= createLeftJoinSQL(entityClass);
 		
 		if(withLimit) {
-			limitOffsetSQL = buildString("LIMIT", String.valueOf(filter.getLimit()), "OFFSET", String.valueOf(offset));
+			limitOffsetSQL = buildString(
+					SQL_KEYWORD_LIMIT,
+					String.valueOf(filter.getLimit()), 
+					SQL_KEYWORD_OFFSET, 
+					String.valueOf(offset));
 		}
 		
 		if(withFilteredField) {
-			filterSQL = createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts, rootFilterEntity);
+			filterSQL = createFilterSQL(
+					entityClass, 
+					filter.getFieldsFilter(), 
+					contains, 
+					exacts, 
+					rootFilterEntity);
 		}  
 
-		String sql = buildString("select ", doubleQuoteMysql(tableName), ".* from ", doubleQuoteMysql(tableName),
-				joinSql, filterSQL, orderSQL, limitOffsetSQL);
+		String sql = buildString(
+				SQL_KEYWORD_SELECT, 
+				doubleQuoteMysql(tableName), 
+				".* from ", 
+				doubleQuoteMysql(tableName),
+				joinSql, 
+				filterSQL, 
+				orderSQL, 
+				limitOffsetSQL);
 
-		String sqlCount = buildString("select COUNT(*) from  ", doubleQuoteMysql(tableName), joinSql, filterSQL);
+		String sqlCount = buildString(
+				SQL_KEYWORDSET_SELECT_COUNT, 
+				doubleQuoteMysql(tableName), 
+				joinSql, 
+				filterSQL);
 
 		return new String[] { sql, sqlCount };
 	}
