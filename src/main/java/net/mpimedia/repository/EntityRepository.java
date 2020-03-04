@@ -45,6 +45,7 @@ public class EntityRepository {
 	private PositionRepository positionRepository;
 
 	public <T> T save(BaseEntity baseEntity) {
+		log.info("execute method save");
 		
 		boolean joinEntityExist = validateJoinColumn(baseEntity);
 		
@@ -74,6 +75,7 @@ public class EntityRepository {
 		for (Field field : joinColumns) {
 			
 			try {
+				field.setAccessible(true);
 				Object value = field.get(baseEntity);
 				if(value == null || (value  instanceof BaseEntity) == false) {
 					continue;

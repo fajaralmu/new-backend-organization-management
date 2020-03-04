@@ -56,6 +56,7 @@ public class EntityService {
 	private static final String FILTER_DATE_DAY = "DAY";
 	private static final String FILTER_DATE_MON1TH = "MONTH";
 	private static final String FILTER_DATE_YEAR = "YEAR";
+	private static final String SQL_RAW_DATE_FILTER = " ${MODE}(`${TABLE_NAME}`.`${COLUMN_NAME}`) = ${VALUE} ";;
 
 	@Autowired
 	private EntityRepository mainRepository;
@@ -137,8 +138,15 @@ public class EntityService {
 
 	}
 
+	/**
+	 * save common entity
+	 * @param entity
+	 * @param isNewRecord
+	 * @return
+	 */
 	private WebResponse saveEntity(BaseEntity entity, boolean isNewRecord) {
-
+		log.info("save common entity: {}", entity);
+		
 		entity = copyNewElement(entity, isNewRecord);
 		BaseEntity savedEntity = mainRepository.save(entity);
 		return WebResponse.builder().entity(savedEntity).build();
@@ -181,6 +189,7 @@ public class EntityService {
 	}
 
 	public WebResponse filter(WebRequest request) {
+		log.info("filter :{}", request);
 
 		SessionData sessionData = sessionService.GetSessionData(request);
 
@@ -281,8 +290,7 @@ public class EntityService {
 		}
 	}
 
-	private WebResponse filterSectionFromInputField(Map<String, Object> fieldsFilter, SessionData sessionData) {
-
+	private WebResponse filterSectionFromInputField(Map<String, Object> fieldsFilter, SessionData sessionData) { 
 		log.info("Will get section from sessions");
 
 		WebResponse response = new WebResponse();
@@ -298,8 +306,7 @@ public class EntityService {
 		return response;
 	}
 
-	private WebResponse filterProgramFromInputField(Map filterFields, SessionData sessionData) {
-
+	private WebResponse filterProgramFromInputField(Map filterFields, SessionData sessionData) { 
 		log.info("Will get program from sessions");
 
 		WebResponse response = new WebResponse();
@@ -532,15 +539,16 @@ public class EntityService {
 
 			String columnName = key;
 			// check if date
-			boolean dayFilter = key.endsWith(DAY_SUFFIX);
-			boolean monthFilter = key.endsWith(MONTH_SUFFIX);
-			boolean yearFilter = key.endsWith(YEAR_SUFFIX);
+			boolean dayFilter = rawKey.endsWith(DAY_SUFFIX);
+			boolean monthFilter = rawKey.endsWith(MONTH_SUFFIX);
+			boolean yearFilter = rawKey.endsWith(YEAR_SUFFIX);
 
 			if (dayFilter || monthFilter || yearFilter) {
 
-				String fieldName = key;
-				String mode = FILTER_DATE_DAY;
-				String sqlItem = " $MODE(`${TABLE_NAME}`.`${COLUMN_NAME}`) = ${VALUE} ";
+				String fieldName	= key;
+				String mode 		= FILTER_DATE_DAY;
+				String sqlItem 		= SQL_RAW_DATE_FILTER;
+				
 				if (dayFilter) {
 					fieldName = key.replace(DAY_SUFFIX, "");
 					mode = FILTER_DATE_DAY;
@@ -569,6 +577,8 @@ public class EntityService {
 						.replace("${MODE}", mode)
 						.replace("${COLUMN_NAME}", columnName)
 						.replace("${VALUE}", filter.get(key).toString());
+				
+				System.out.println("[debug] sql date: "+sqlItem);
 				
 				filters.add(sqlItem);
 				continue;
@@ -678,9 +688,7 @@ public class EntityService {
 		if (customEntity == null || customEntity.rootFilter().length == 0) {
 
 			return "";
-		}
-
-		String rootFilterName = customEntity.rootFilter()[customEntity.rootFilter().length - 1];
+		} 
 
 		try {
 
@@ -694,8 +702,7 @@ public class EntityService {
 
 			return filter;
 
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (Exception e) { 
 			return "";
 		}
 
@@ -742,7 +749,8 @@ public class EntityService {
 	}
 
 	private static String getTableName(Class entityClass) {
-		log.info("entity class: " + entityClass.getCanonicalName());
+		log.info("getTableName From entity class: " + entityClass.getCanonicalName());
+		
 		Table table = (Table) entityClass.getAnnotation(Table.class);
 
 		if (table != null) {
@@ -759,28 +767,30 @@ public class EntityService {
 
 		log.info("CRITERIA-FILTER: {}", filter);
 
-		Integer offset = filter.getPage() * filter.getLimit();
-		boolean withLimit = filter.getLimit() > 0;
-		boolean withOrder = filter.getOrderBy() != null && filter.getOrderType() != null
+		Integer offset 				= filter.getPage() * filter.getLimit();
+		boolean withLimit 			= filter.getLimit() > 0;
+		boolean withOrder 			= filter.getOrderBy() != null && filter.getOrderType() != null
 				&& !filter.getOrderBy().equals("") && !filter.getOrderType().equals("");
-		boolean contains = filter.isContains();
-		boolean exacts = filter.isExacts();
-		boolean withFilteredField = filter.getFieldsFilter() != null;
+		boolean contains 			= filter.isContains();
+		boolean exacts 				= filter.isExacts();
+		boolean withFilteredField 	= filter.getFieldsFilter() != null;
 
-		String orderType = filter.getOrderType();
-		String orderBy = filter.getOrderBy();
-		String tableName = getTableName(entityClass);
-		String orderSQL = withOrder ? orderSQL(entityClass, orderType, orderBy) : "";
+		String orderType 		= filter.getOrderType();
+		String orderBy 			= filter.getOrderBy();
+		String tableName 		= getTableName(entityClass);
+		String orderSQL 		= withOrder ? orderSQL(entityClass, orderType, orderBy) : "";
 
-		String limitOffsetSQL = withLimit
-				? buildString("LIMIT", String.valueOf(filter.getLimit()), "OFFSET", String.valueOf(offset))
-				: "";
-
-		String filterSQL = withFilteredField
-				? createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts, rootFilterEntity)
-				: "";
-
-		String joinSql = createLeftJoinSQL(entityClass);
+		String limitOffsetSQL 	= "";
+		String filterSQL		= "";
+		String joinSql			= createLeftJoinSQL(entityClass);
+		
+		if(withLimit) {
+			limitOffsetSQL = buildString("LIMIT", String.valueOf(filter.getLimit()), "OFFSET", String.valueOf(offset));
+		}
+		
+		if(withFilteredField) {
+			filterSQL = createFilterSQL(entityClass, filter.getFieldsFilter(), contains, exacts, rootFilterEntity);
+		}  
 
 		String sql = buildString("select ", doubleQuoteMysql(tableName), ".* from ", doubleQuoteMysql(tableName),
 				joinSql, filterSQL, orderSQL, limitOffsetSQL);

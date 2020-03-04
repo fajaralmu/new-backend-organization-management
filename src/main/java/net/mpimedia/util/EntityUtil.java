@@ -13,7 +13,6 @@ import javax.persistence.Id;
 import org.hibernate.internal.jaxb.mapping.hbm.EntityElement;
 
 import lombok.extern.slf4j.Slf4j;
-import net.mpimedia.annotation.Dto;
 import net.mpimedia.annotation.FormField;
 import net.mpimedia.entity.BaseEntity;
  
@@ -194,9 +193,15 @@ public class EntityUtil {
 				|| field.getType().equals(BigInteger.class);
 	}
 
-	 
+	/**
+	 * copy object with option ID included or NOT
+	 * @param source
+	 * @param targetClass
+	 * @param withId
+	 * @return
+	 */
 	public static Object copyFieldElementProperty(Object source, Class targetClass, boolean withId) {
-		log.info("CLASSSS :" + targetClass.getCanonicalName());
+		log.info("Will Copy Class :" + targetClass.getCanonicalName());
 		Object targetObject = null;
 		try {
 			targetObject = targetClass.newInstance();
@@ -206,32 +211,29 @@ public class EntityUtil {
 		}
 		List<Field> fields = getDeclaredFields(source.getClass());
 		
-		for (Field field : fields) {
-			FormField formField = field.getAnnotation(FormField.class);
-			
-			if (formField != null) {
+		for (Field field : fields) { 
 				
-				if (field.getAnnotation(Id.class) != null && !withId) {
-					continue;
-				}
-
-				Field currentField = getDeclaredField(targetClass, field.getName());
-				
-				if(currentField == null) 
-					continue;
-				
-				currentField.setAccessible(true);
-				field.setAccessible(true);
-				
-				try {
-					currentField.set(targetObject, field.get(source));
-					
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+			if (field.getAnnotation(Id.class) != null && !withId) {
+				continue;
 			}
+
+			Field currentField = getDeclaredField(targetClass, field.getName());
+			
+			if(currentField == null) 
+				continue;
+			
+			currentField.setAccessible(true);
+			field.setAccessible(true);
+			
+			try {
+				currentField.set(targetObject, field.get(source));
+				
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			 
 		}
 		return targetObject;
 	}
@@ -301,6 +303,7 @@ public class EntityUtil {
 		
 		for (Object object : list) {
 			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
+			field.setAccessible(true);
 			try {
 				Object fieldValue = field.get(object);
 				
