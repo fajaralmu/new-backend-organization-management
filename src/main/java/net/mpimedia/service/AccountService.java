@@ -88,7 +88,7 @@ public class AccountService {
 			return;
 		}
 		
-		new Thread(()->{
+		new Thread(() ->{
 			Thread thread1 = new Thread(() ->{ 
 				
 				log.info("Refresh programs from database for sessionKey: {}", sessionData.getKey());

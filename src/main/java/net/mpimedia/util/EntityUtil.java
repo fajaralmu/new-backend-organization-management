@@ -296,5 +296,35 @@ public class EntityUtil {
 		}
 		return (T) entities;
 	}
+	
+	public static <T> T getObjectFromListByFieldName(String fieldName, Object value, List list) {
+		
+		for (Object object : list) {
+			Field field = EntityUtil.getDeclaredField(object.getClass(), fieldName);
+			try {
+				Object fieldValue = field.get(object);
+				
+				if(fieldValue != null && fieldValue .equals(value)) {
+					return (T) object;
+				}
+				
+			} catch (Exception e) {
+				 
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
+	public static boolean existInList(Object o, List l) {
+		for (Object object : l) {
+			if (object.equals(o)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 }

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.Column;
@@ -51,6 +50,13 @@ import net.mpimedia.util.StringUtil;
 @Slf4j
 public class EntityService {
 
+	private static final String DAY_SUFFIX = "-day";
+	private static final String MONTH_SUFFIX = "-month";
+	private static final String YEAR_SUFFIX = "-year";
+	private static final String FILTER_DATE_DAY = "DAY";
+	private static final String FILTER_DATE_MON1TH = "MONTH";
+	private static final String FILTER_DATE_YEAR = "YEAR";
+
 	@Autowired
 	private EntityRepository mainRepository;
 	@Autowired
@@ -59,8 +65,6 @@ public class EntityService {
 	private TemporaryDataService temporaryDataService;
 	@Autowired
 	private AccountService accountService;
-	@Autowired
-	private ProgramRepository programRepository;
 	@Autowired
 	private InstitutionRepository institutionRepository;
 	@Autowired
@@ -120,7 +124,7 @@ public class EntityService {
 			case "position":
 				return saveEntity(request.getPosition(), newRecord);
 			default:
-			//	return WebResponse.failed("Invalid Entity!");
+				// return WebResponse.failed("Invalid Entity!");
 				break;
 
 			}
@@ -140,6 +144,14 @@ public class EntityService {
 		return WebResponse.builder().entity(savedEntity).build();
 	}
 
+	/**
+	 * save program
+	 * 
+	 * @param program
+	 * @param newRecord
+	 * @param sessionData
+	 * @return
+	 */
 	private WebResponse saveProgram(Program program, boolean newRecord, SessionData sessionData) {
 
 		program = copyNewElement(program, newRecord);
@@ -148,6 +160,13 @@ public class EntityService {
 		return WebResponse.builder().entity(newProgram).build();
 	}
 
+	/**
+	 * save division
+	 * 
+	 * @param division
+	 * @param newRecord
+	 * @return
+	 */
 	private WebResponse saveDivision(Division division, boolean newRecord) {
 
 		division = copyNewElement(division, newRecord);
@@ -247,7 +266,7 @@ public class EntityService {
 			String sql = sqlListAndCount[0];
 			String sqlCount = sqlListAndCount[1];
 
-			List<BaseEntity> entities = getEntitiesBySql(sql, entityClass);
+			List<BaseEntity> entities = doFilterEntity(sql, entityClass);
 
 			Integer count = 0;
 			Object countResult = repositoryCustom.getSingleResult(sqlCount);
@@ -296,7 +315,7 @@ public class EntityService {
 		return response;
 	}
 
-	public List<BaseEntity> getEntitiesBySql(String sql, Class<? extends BaseEntity> entityClass) {
+	public List<BaseEntity> doFilterEntity(String sql, Class<? extends BaseEntity> entityClass) {
 
 		List<BaseEntity> entities = repositoryCustom.filterAndSort(sql, entityClass);
 		return EntityUtil.validateDefaultValue(entities);
@@ -364,16 +383,11 @@ public class EntityService {
 	}
 
 	public static Field getFieldByName(String name, List<Field> fields) {
-		for (Field field : fields) {
-			if (field.getName().equals(name)) {
-				return field;
-			}
-		}
-		return null;
+		return EntityUtil.getObjectFromListByFieldName("name", name, fields);
 	}
 
 	public static String getColumnName(Field field) {
-		log.info(field.getDeclaringClass() + " from " + field.getName());
+		log.info("get column Name " + field.getDeclaringClass() + " from " + field.getName());
 
 		if (field.getAnnotation(Column.class) == null)
 			return field.getName();
@@ -398,15 +412,6 @@ public class EntityService {
 		} catch (Exception e) {
 			return null;
 		}
-	}
-
-	static boolean existInList(Object o, List l) {
-		for (Object object : l) {
-			if (object.equals(o)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static String createLeftJoinSql(Class entityClass, Field field) {
@@ -434,8 +439,8 @@ public class EntityService {
 
 	}
 
-	private static String createLeftJoinSQL(Class entityClass) {
-		String tableName = getTableName(entityClass);
+	private static String createLeftJoinSQL(Class<? extends BaseEntity> entityClass) {
+
 		StringBuilder sql = new StringBuilder("");
 
 		CustomEntity customModel = getClassAnnotation(entityClass, CustomEntity.class);
@@ -443,7 +448,8 @@ public class EntityService {
 		List<Field> fields = EntityUtil.getDeclaredFields(entityClass);
 		for (Field field : fields) {
 
-			if (customModel != null && existInList(field.getName(), Arrays.asList(customModel.rootFilter()))) {
+			if (customModel != null
+					&& EntityUtil.existInList(field.getName(), Arrays.asList(customModel.rootFilter()))) {
 				continue;
 			}
 
@@ -526,40 +532,44 @@ public class EntityService {
 
 			String columnName = key;
 			// check if date
-			boolean dayFilter = key.endsWith("-day");
-			boolean monthFilter = key.endsWith("-month");
-			boolean yearFilter = key.endsWith("-year");
+			boolean dayFilter = key.endsWith(DAY_SUFFIX);
+			boolean monthFilter = key.endsWith(MONTH_SUFFIX);
+			boolean yearFilter = key.endsWith(YEAR_SUFFIX);
 
 			if (dayFilter || monthFilter || yearFilter) {
 
 				String fieldName = key;
-				String mode = "DAY";
+				String mode = FILTER_DATE_DAY;
 				String sqlItem = " $MODE(`${TABLE_NAME}`.`${COLUMN_NAME}`) = ${VALUE} ";
 				if (dayFilter) {
-					fieldName = key.replace("-day", "");
-					mode = "DAY";
+					fieldName = key.replace(DAY_SUFFIX, "");
+					mode = FILTER_DATE_DAY;
 
 				} else if (monthFilter) {
-					fieldName = key.replace("-month", "");
-					mode = "MONTH";
+					fieldName = key.replace(MONTH_SUFFIX, "");
+					mode = FILTER_DATE_MON1TH;
 
 				} else if (yearFilter) {
-					fieldName = key.replace("-year", "");
-					mode = "YEAR";
+					fieldName = key.replace(YEAR_SUFFIX, "");
+					mode = FILTER_DATE_YEAR;
 
 				}
 
 				Field field = getFieldByName(fieldName, fields);
 
 				if (field == null) {
-					log.warn("!!!!!!!!!!! FIELD NOT FOUND: " + fieldName);
+					log.warn("FIELD NOT FOUND: " + fieldName + " !");
 					continue;
 
 				}
 
 				columnName = getColumnName(field);
-				sqlItem = sqlItem.replace("${TABLE_NAME}", tableName).replace("${MODE}", mode)
-						.replace("${COLUMN_NAME}", columnName).replace("${VALUE}", filter.get(key).toString());
+				sqlItem = sqlItem
+						.replace("${TABLE_NAME}", tableName)
+						.replace("${MODE}", mode)
+						.replace("${COLUMN_NAME}", columnName)
+						.replace("${VALUE}", filter.get(key).toString());
+				
 				filters.add(sqlItem);
 				continue;
 			}
@@ -567,7 +577,7 @@ public class EntityService {
 			Field field = getFieldByName(key, fields);
 
 			if (field == null) {
-				log.warn("!!!!!!!Field Not Found :" + key);
+				log.warn("Field Not Found :" + key + " !");
 				continue;
 
 			}
@@ -780,8 +790,6 @@ public class EntityService {
 		return new String[] { sql, sqlCount };
 	}
 
-	
-	
 	static String doubleQuoteMysql(String str) {
 		return StringUtil.doubleQuoteMysql(str);
 	}
