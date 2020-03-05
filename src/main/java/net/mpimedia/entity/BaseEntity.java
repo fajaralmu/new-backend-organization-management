@@ -12,9 +12,7 @@ import javax.persistence.Transient;
 
 import net.mpimedia.annotation.Dto;
 import net.mpimedia.annotation.FormField;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonIgnore; 
 
 @Dto
 @MappedSuperclass  

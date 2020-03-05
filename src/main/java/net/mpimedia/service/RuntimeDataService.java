@@ -8,6 +8,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.repository.SessionDataRepository;
@@ -23,11 +26,13 @@ public class RuntimeDataService {
 	public static final String JSESSSIONID = "JSESSIONID";
 
 	private static final String SESSION_DATA = "session_data";
+	
+	static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
 	private SessionDataRepository sessionDataRepository;
 	
-	private Map<String, SessionData> sessions = new HashMap<>();
+	private Map<String, String> sessions = new HashMap<>();
 	
 
 	public RuntimeDataService() {
@@ -46,7 +51,14 @@ public class RuntimeDataService {
 	public SessionData getModel(String key) {
 		
 		if(sessions.get(key)!=null) {
-			return sessions.get(key);
+			String sessionString = sessions.get(key);
+			
+			try {
+				return (SessionData) objectMapper.readValue(sessionString, SessionData.class);
+			} catch (Exception e) {
+				log.error("Error getting session {}", e);
+				e.printStackTrace();
+			}
 		}
 		return null;
 		
@@ -74,7 +86,16 @@ public class RuntimeDataService {
 			existingSessionData.setModifiedDate(new Date());
 		}
 		
-		sessions.put(requestId, existingSessionData);
+		try {
+			String sessionString = objectMapper.writeValueAsString(existingSessionData);
+			sessions.put(requestId, sessionString);
+			
+		} catch (JsonProcessingException e) {
+			log.error("Error wiriting session to string");
+			e.printStackTrace();
+		}
+		
+		
 		
 		Thread thread = new Thread(new Runnable() { 
 				@Override
