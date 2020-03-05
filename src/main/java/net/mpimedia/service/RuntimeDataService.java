@@ -62,29 +62,9 @@ public class RuntimeDataService {
 	public SessionData getModel(String key) {
 		
 		if(SESSION_MAP.get(key)!=null) {
-			return (SessionData) SESSION_MAP.get(key);
-//			
-//			try {
-//				return (SessionData) objectMapper.readValue(sessionString, SessionData.class);
-//			} catch (Exception e) {
-//				log.error("Error getting session {}", e);
-//				e.printStackTrace();
-//			}
+			return (SessionData) SESSION_MAP.get(key); 
 		}
-		return null;
-		
-//		log.info("Will get from DB");
-//		
-//		try {
-//			SessionData object = sessionDataRepository.findTop1ByKey(key); 
-//			sessions.put(key, object);
-//			return object;
-//			
-//		} catch (Exception ex) { 
-//			ex.printStackTrace();
-//			return null;
-//			
-//		}
+		return null; 
 	}
 
 	public SessionData getSessionData(String requestId) { 
@@ -108,9 +88,10 @@ public class RuntimeDataService {
 					
 					if(existingSessionData!=null) {
 						sessionDataRepository.save(existingSessionData); 
+
+						log.info("Saved session {} to DB", requestId);
 					}
 					
-					log.info("Saved to DB");
 					
 				}
 			} 

@@ -1,4 +1,4 @@
-package net.mpimedia.service;
+package net.mpimedia.util;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.WebRequest;
+import net.mpimedia.service.RuntimeDataService;
 
 @Service
 public class RestUtil {
