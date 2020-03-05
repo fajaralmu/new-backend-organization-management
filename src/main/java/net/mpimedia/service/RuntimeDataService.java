@@ -1,5 +1,6 @@
 package net.mpimedia.service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,18 +26,18 @@ public class RuntimeDataService {
 
 	public static final String JSESSSIONID = "JSESSIONID";
 
-	private static final String SESSION_DATA = "session_data";
+	public static final String SESSION_DATA = "session_data";
 	
 	static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
 	private SessionDataRepository sessionDataRepository;
 	
-	private Map<String, String> sessions = new HashMap<>();
+	private Map<String, Object> sessions = Collections.synchronizedMap(new HashMap<>());
 	
 
 	public RuntimeDataService() {
-		System.out.println("======================= RegistryService ===============================");
+		System.out.println("======================= RuntimeDataService ===============================");
 	}
 	
 	
@@ -51,14 +52,14 @@ public class RuntimeDataService {
 	public SessionData getModel(String key) {
 		
 		if(sessions.get(key)!=null) {
-			String sessionString = sessions.get(key);
-			
-			try {
-				return (SessionData) objectMapper.readValue(sessionString, SessionData.class);
-			} catch (Exception e) {
-				log.error("Error getting session {}", e);
-				e.printStackTrace();
-			}
+			return (SessionData) sessions.get(key);
+//			
+//			try {
+//				return (SessionData) objectMapper.readValue(sessionString, SessionData.class);
+//			} catch (Exception e) {
+//				log.error("Error getting session {}", e);
+//				e.printStackTrace();
+//			}
 		}
 		return null;
 		
@@ -85,17 +86,9 @@ public class RuntimeDataService {
 		if(existingSessionData != null) {
 			existingSessionData.setModifiedDate(new Date());
 		}
-		
-		try {
-			String sessionString = objectMapper.writeValueAsString(existingSessionData);
-			sessions.put(requestId, sessionString);
-			
-		} catch (JsonProcessingException e) {
-			log.error("Error wiriting session to string");
-			e.printStackTrace();
-		}
-		
-		
+		 
+		sessions.put(requestId, existingSessionData);
+	 
 		
 		Thread thread = new Thread(new Runnable() { 
 				@Override
