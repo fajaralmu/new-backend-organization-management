@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.jcs.JCS;
+import org.apache.commons.jcs.access.CacheAccess;
+import org.apache.commons.jcs.access.GroupCacheAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +32,21 @@ public class RuntimeDataService {
 	public static final String SESSION_DATA = "session_data";
 	
 	static final ObjectMapper objectMapper = new ObjectMapper();
+ 
+	private static final Map<String, Object> SESSION_MAP = Collections.synchronizedMap(new HashMap<>());
+	
+//	private static final CacheAccess<String, Object> SESSION_MAP = JCS.getInstance(SESSION_DATA);
+//	private static final GroupCacheAccess<Object, Object> CACHE_GROUP = JCS.getGroupCacheInstance(SESSION_DATA);
 
+	
 	@Autowired
 	private SessionDataRepository sessionDataRepository;
 	
-	private Map<String, Object> sessions = Collections.synchronizedMap(new HashMap<>());
 	
-
 	public RuntimeDataService() {
+		 
+		
+		
 		System.out.println("======================= RuntimeDataService ===============================");
 	}
 	
@@ -51,8 +61,8 @@ public class RuntimeDataService {
 	 */
 	public SessionData getModel(String key) {
 		
-		if(sessions.get(key)!=null) {
-			return (SessionData) sessions.get(key);
+		if(SESSION_MAP.get(key)!=null) {
+			return (SessionData) SESSION_MAP.get(key);
 //			
 //			try {
 //				return (SessionData) objectMapper.readValue(sessionString, SessionData.class);
@@ -87,7 +97,7 @@ public class RuntimeDataService {
 			existingSessionData.setModifiedDate(new Date());
 		}
 		 
-		sessions.put(requestId, existingSessionData);
+		SESSION_MAP.put(requestId, existingSessionData);
 	 
 		
 		Thread thread = new Thread(new Runnable() { 
@@ -123,16 +133,19 @@ public class RuntimeDataService {
 	/**======================ACCESSED BY SCHEDULER================== **/
 	
 	public void clear() {
-		this.sessions.clear();
+		this.SESSION_MAP.clear();
 	}
 	
 	public void remove(String key) {
 		log.info("Will remove from session: {}", key);
-		this.sessions.remove(key);
+		this.SESSION_MAP.remove(key);
 	}
 	
 	public Set<String> getSessionKeys(){
-		return this.sessions.keySet();
+		Set<String> groupNames = this.SESSION_MAP.keySet();
+		
+		System.out.println(groupNames);
+		return groupNames;
 	}
 
 	/**
