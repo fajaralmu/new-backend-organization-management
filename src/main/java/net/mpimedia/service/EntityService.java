@@ -103,8 +103,8 @@ public class EntityService {
 				return saveEntity(request.getSection(), newRecord);
 
 			case "event":
-				request.getEvent().setUser(sessionData.getUser());
-				return saveEntity(request.getEvent(), newRecord);
+				
+				return saveEvent(request.getEvent(), newRecord, sessionData);
 
 			case "registeredrequest":
 				return saveEntity(request.getRegisteredRequest(), newRecord);
@@ -123,6 +123,18 @@ public class EntityService {
 		}
 		return WebResponse.failed();
 
+	}
+
+	private WebResponse saveEvent(Event entity, boolean isNewRecord, SessionData sessionData) {
+		log.info("save event entity: {}", entity);
+		
+		entity = copyNewElement(entity, isNewRecord);
+		entity.setUser(sessionData.getUser());
+		
+		BaseEntity savedEntity = mainRepository.save(entity);
+		
+		accountService.updateEvent(sessionData);
+		return WebResponse.builder().entity(savedEntity).build();
 	}
 
 	/**

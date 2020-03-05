@@ -13,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.Division;
+import net.mpimedia.entity.Event;
 import net.mpimedia.entity.Program;
 import net.mpimedia.entity.Section;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
+import net.mpimedia.repository.EventRepository;
 import net.mpimedia.repository.ProgramRepository;
 import net.mpimedia.repository.SectionRepository;
 import net.mpimedia.repository.UserRepository;
@@ -35,6 +37,8 @@ public class AccountService {
 	private ProgramRepository programRepository;
 	@Autowired
 	private SectionRepository sectionRepository;
+	@Autowired
+	private EventRepository eventRepository;
 
 	@PostConstruct
 	public void init() {
@@ -81,6 +85,27 @@ public class AccountService {
 		return WebResponse.failed();
 	}
 	
+	public void updateEvent(SessionData sessionData)
+	{
+		if(sessionData.getDivision() == null) {
+			log.error("NO DIVISION FOUND");
+			return;
+		}
+		
+		new Thread(()->{
+			
+			log.info("begin update event"); 
+			log.info("Refresh events from database for sessionKey: {}", sessionData.getKey());
+			
+			List<Event> events = eventRepository.getByDivisionId(sessionData.getDivision().getId());
+			sessionData.setEvents(events);
+			
+			sessionService.updateSessionData(sessionData.getKey(), sessionData); 
+			
+			log.info("end update event");
+			
+		}).start();
+	}
 	public void updateSelectedDivision(SessionData sessionData) {
 		
 		if(sessionData.getDivision() == null) {
@@ -105,17 +130,30 @@ public class AccountService {
 				sessionData.setSections(sections); 
 			 
 			}); 
+			
+			Thread thread3 = new Thread(()->{
+				
+				log.info("Refresh events from database for sessionKey: {}", sessionData.getKey());
+				
+				List<Event> events = eventRepository.getByDivisionId(sessionData.getDivision().getId());
+				sessionData.setEvents(events);
+			});
+			
+			
 			thread1.start();
 			thread2.start();
+			thread3.start();
 			
 			try {
 				thread1.join(); 
 				thread2.join();
+				thread3.join();
 			} catch (InterruptedException e) {
 				log.error("Thread interrupted: {}",e);
 				e.printStackTrace();
 			}
 			sessionService.updateSessionData(sessionData.getKey(), sessionData); 
+			log.info("End refresh session");
 		})
 		.start();
 	}

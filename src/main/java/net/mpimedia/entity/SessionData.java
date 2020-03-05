@@ -56,6 +56,9 @@ public class SessionData extends BaseEntity implements Remote, Serializable {
 	@Transient
 	@JsonIgnore
 	private List<Section> sections;
+	@Transient
+	@JsonIgnore
+	private List<Event> events;
 	
 
 }

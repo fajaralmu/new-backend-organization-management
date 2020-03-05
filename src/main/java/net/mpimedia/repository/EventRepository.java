@@ -17,5 +17,13 @@ public interface EventRepository  extends JpaRepository<Event, Long>, Repository
 					+ " AND division.id=?3"
 			)
 	List<Event> getByMonthAndYear(int month, int year, long divisionId);
+	
+	@Query(nativeQuery = true,
+			value = "select * from event left join program on event.program_id = program.id "
+					+ " left join  section  ON program.section_id =  section.id "
+					+ " left join division on division.id =  section.division_id "
+					+ " where division.id=?1"
+			)
+	List<Event> getByDivisionId( long divisionId);
 
 }
