@@ -12,7 +12,7 @@ public class RestUtil {
 
 	
 	@Autowired
-	private RegistryService registryService;
+	private RuntimeDataService registryService;
 	
 	
 	public  WebRequest populateRequest(WebRequest webRequest, HttpServletRequest httpRequest) { 

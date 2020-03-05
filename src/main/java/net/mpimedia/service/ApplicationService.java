@@ -15,7 +15,7 @@ import net.mpimedia.util.LogProxyFactory;
 @Service
 public class ApplicationService {
 	@Autowired
-	private RegistryService registryService;
+	private RuntimeDataService registryService;
 
 	@PostConstruct
 	public void init() {

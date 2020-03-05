@@ -8,16 +8,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 
 import net.mpimedia.annotation.Dto;
 import net.mpimedia.annotation.FormField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Builder;
+
 @Dto
-@MappedSuperclass 
+@MappedSuperclass  
 public class BaseEntity {
 	
-	
+	@Transient 
+	private int hashCode = hashCode();
 	
 	@Column(name="created_date")
 	@JsonIgnore
@@ -44,6 +48,15 @@ public class BaseEntity {
 	
 	
 	
+	
+	public int getHashCode() {
+		return hashCode;
+	}
+
+	public void setHashCode(int hashCode) {
+		this.hashCode = hashCode;
+	}
+
 	public String getFontColor() {
 		return fontColor;
 	}

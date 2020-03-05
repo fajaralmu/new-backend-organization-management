@@ -14,7 +14,7 @@ import net.mpimedia.repository.SessionDataRepository;
 
 @Service
 @Slf4j
-public class RegistryService {
+public class RuntimeDataService {
 
 	public static final String PAGE_REQUEST = "page_req_id";
 
@@ -30,7 +30,7 @@ public class RegistryService {
 	private Map<String, SessionData> sessions = new HashMap<>();
 	
 
-	public RegistryService() {
+	public RuntimeDataService() {
 		System.out.println("======================= RegistryService ===============================");
 	}
 	

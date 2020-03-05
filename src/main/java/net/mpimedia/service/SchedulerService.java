@@ -16,7 +16,7 @@ import net.mpimedia.entity.SessionData;
 public class SchedulerService {
 
 	@Autowired
-	private RegistryService registryService;
+	private RuntimeDataService registryService;
 	@Autowired
 	private TemporaryDataService temporaryDataService;
 	@Autowired

@@ -98,6 +98,18 @@ public class AccountService {
 			log.info("Refresh events from database for sessionKey: {}", sessionData.getKey());
 			
 			List<Event> events = eventRepository.getByDivisionId(sessionData.getDivision().getId());
+			
+			/**
+			 * remove unused things
+			 */
+			if(events != null) {
+				for (Event event : events) {
+					event.setUser(null);
+					if(event.getProgram() != null)
+						event.getProgram().setSection(null);
+				}
+			}
+			
 			sessionData.setEvents(events);
 			
 			sessionService.updateSessionData(sessionData.getKey(), sessionData); 
@@ -106,6 +118,7 @@ public class AccountService {
 			
 		}).start();
 	}
+	
 	public void updateSelectedDivision(SessionData sessionData) {
 		
 		if(sessionData.getDivision() == null) {
@@ -119,6 +132,16 @@ public class AccountService {
 				log.info("Refresh programs from database for sessionKey: {}", sessionData.getKey());
 			
 				List<Program> programs = programRepository.getProgramsByDivisionId(sessionData.getDivision().getId());
+				
+				/**
+				 * remove unused
+				 */
+				if(programs != null) {
+					for (Program program : programs) {
+						program.setSection(null);
+					}
+				}
+				
 				sessionData.setPrograms(programs); 
 				 
 			}); 
@@ -127,6 +150,16 @@ public class AccountService {
 				log.info("Refresh sections from database for sessionKey: {}", sessionData.getKey());
 				
 				List<Section> sections = sectionRepository.findByDivision(sessionData.getDivision());
+				
+				/**
+				 * remove unused
+				 */
+				if(sections != null) {
+					for (Section section : sections) {
+						section.setDivision(null);
+					}
+				}
+				
 				sessionData.setSections(sections); 
 			 
 			}); 
@@ -136,6 +169,18 @@ public class AccountService {
 				log.info("Refresh events from database for sessionKey: {}", sessionData.getKey());
 				
 				List<Event> events = eventRepository.getByDivisionId(sessionData.getDivision().getId());
+				
+				/**
+				 * remove unused things
+				 */
+				if(events != null) {
+					for (Event event : events) {
+						event.setUser(null);
+						if(event.getProgram() != null)
+							event.getProgram().setSection(null);
+					}
+				}
+				
 				sessionData.setEvents(events);
 			});
 			
@@ -188,7 +233,7 @@ public class AccountService {
 			try {
 				 Division  division = temporaryDataService.getById(webRequest.getDivisionId());
 
-				if (division!=null) {
+				if (division != null) {
 					
 					response.setEntity(division );
 					sessionData.setDivision(division );

@@ -11,7 +11,7 @@ import net.mpimedia.entity.User;
 public class SessionService {
 
 	@Autowired
-	private RegistryService registryService;
+	private RuntimeDataService registryService;
 
 	public boolean putUser(String requestId, User finalUser) {
 

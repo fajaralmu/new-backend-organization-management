@@ -21,7 +21,7 @@ import net.mpimedia.util.LogProxyFactory;
 @Service
 public class AdminService  {
 	@Autowired
-	private RegistryService registryService;
+	private RuntimeDataService registryService;
 	@Autowired
 	private EventRepository eventRepository;
 
