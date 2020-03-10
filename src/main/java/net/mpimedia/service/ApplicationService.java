@@ -22,6 +22,11 @@ public class ApplicationService {
 		LogProxyFactory.setLoggers(this);
 	}
 
+	/**
+	 * generate request id for accessing app
+	 * @param requestId
+	 * @return
+	 */
 	public WebResponse generateAppId(String requestId) {
 		WebResponse response = WebResponse.success();
 

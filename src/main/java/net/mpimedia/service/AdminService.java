@@ -30,6 +30,11 @@ public class AdminService  {
 		LogProxyFactory.setLoggers(this);
 	}
 
+	/**
+	 * get events
+	 * @param webRequest
+	 * @return
+	 */
 	public WebResponse getEvent(WebRequest webRequest) {
 		SessionData sessionData = registryService.getSessionData(webRequest.getRequestId());
 		if (sessionData == null || sessionData.getDivision() == null) {
@@ -46,6 +51,13 @@ public class AdminService  {
 		return response;
 	}
 	
+	/**
+	 * get event from session by period
+	 * @param month
+	 * @param year
+	 * @param sessionData
+	 * @return
+	 */
 	private List<Event> getEventByPeriod(int month, int year, SessionData sessionData){
 		
 		List<Event> events 		 = new ArrayList<Event>();

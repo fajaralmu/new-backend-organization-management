@@ -43,7 +43,7 @@ public class SchedulerService {
 			public void run() {
 
 				while (true) {
-					Set<String> keys = registryService.getSessionKeys();
+					final Set<String> keys = registryService.getSessionKeys();
 
 					try {
 						Thread.sleep(1000);

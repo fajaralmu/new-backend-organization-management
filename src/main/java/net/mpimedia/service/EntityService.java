@@ -421,6 +421,7 @@ public class EntityService {
 		}
 	}
 
+	
 	private static <T> T copyNewElement(Object source, boolean newRecord) {
 
 		Object result = EntityUtil.copyFieldElementProperty(source, source.getClass(), !newRecord);

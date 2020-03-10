@@ -25,6 +25,14 @@ public class ProgressService {
 		realtimeService.sendProgress(1,requestId);
 	}
 	
+	/**
+	 * send progress
+	 * @param progress
+	 * @param maxProgress
+	 * @param percent
+	 * @param newProgress
+	 * @param requestId
+	 */
 	public void sendProgress(double progress, double maxProgress, double percent, boolean newProgress, String requestId) {
 		if(newProgress) {
 			currentProgress = 0.0;
@@ -34,6 +42,10 @@ public class ProgressService {
 		realtimeService.sendProgress(currentProgress*percent, requestId);
 	}
 
+	/**
+	 * end progress and send 98 - 100 %
+	 * @param requestId
+	 */
 	public void sendComplete(String requestId) {
 		System.out.println("________COMPLETE PROGRESS________");
 		realtimeService.sendProgress(98, requestId);

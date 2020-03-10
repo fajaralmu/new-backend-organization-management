@@ -71,7 +71,12 @@ public class RuntimeDataService {
 		return this.getModel(requestId);
 	}
 
-	public void storeSessionData(String requestId, SessionData existingSessionData) {  
+	/**
+	 * update session MAP
+	 * @param requestId
+	 * @param existingSessionData
+	 */
+	public synchronized void storeSessionData(String requestId, SessionData existingSessionData) {  
 		
 		if(existingSessionData != null) {
 			existingSessionData.setModifiedDate(new Date());
@@ -117,7 +122,7 @@ public class RuntimeDataService {
 		this.SESSION_MAP.clear();
 	}
 	
-	public void remove(String key) {
+	public synchronized void remove(String key) {
 		log.info("Will remove from session: {}", key);
 		this.SESSION_MAP.remove(key);
 	}
