@@ -67,7 +67,7 @@ public class RuntimeDataService {
 		return null; 
 	}
 
-	public SessionData getSessionData(String requestId) { 
+	public synchronized SessionData getSessionData(String requestId) { 
 		return this.getModel(requestId);
 	}
 

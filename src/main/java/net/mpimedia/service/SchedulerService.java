@@ -44,7 +44,8 @@ public class SchedulerService {
 
 				while (true) {
 					final Set<String> keys = registryService.getSessionKeys();
-
+					 
+					
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -52,6 +53,7 @@ public class SchedulerService {
 					}
 
 					if (keys != null) {
+						try {
 						for (String string : keys) {
 							SessionData sessionData = registryService.getSessionData(string);
 
@@ -68,6 +70,9 @@ public class SchedulerService {
 								log.warn("**WILL REMOVE SESSION WITH KEY: {}, idle time: {}", string, delta);
 								registryService.remove(string);
 							}
+						}
+						}catch (Exception e) { 
+							log.error("Error looping:{}", e);
 						}
 					}
 
