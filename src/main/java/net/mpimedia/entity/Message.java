@@ -48,7 +48,7 @@ public class Message extends BaseEntity {
 	@Column
 	@FormField
 	private String text;
-	@JsonFormat(pattern = "dd MMMM yyyy' 'hh:mm:ss")
+	@JsonFormat(pattern = "E, dd MMM yyyy HH:mm:ss z")
 	@Column
 	@FormField
 	private Date date;
