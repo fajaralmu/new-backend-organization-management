@@ -81,6 +81,8 @@ public class MessagingService {
 			});
 		}
 		
+		updateChat(requestId, receiver);
+		
 		return response ;
 	}
 

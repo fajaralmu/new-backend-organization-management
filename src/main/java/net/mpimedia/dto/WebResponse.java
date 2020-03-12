@@ -1,6 +1,7 @@
 package net.mpimedia.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -45,9 +46,8 @@ public class WebResponse implements Serializable {
 	@Builder.Default
 	private List<Division> divisions = new ArrayList<>();
 	@Builder.Default
-	private List<Message> messages = new ArrayList<>();
-	@Builder.Default
-	private Set<String> sessionKeys = new ArrayList<>();
+	private List<Message> messages = new ArrayList<>(); 
+	private Set<String> sessionKeys;
 
 	//realtime loading
 	private String requestId;
