@@ -48,6 +48,8 @@ public class WebResponse implements Serializable {
 	@Builder.Default
 	private List<Message> messages = new ArrayList<>(); 
 	private Set<String> sessionKeys;
+	@Builder.Default
+	private List<String> receivers = new ArrayList<>(); 
 
 	//realtime loading
 	private String requestId;

@@ -27,6 +27,7 @@ public class MessagingService {
 	public WebResponse getMessages(String requestId) {
 
 		List<Message> messages 	= new ArrayList<>();
+		List<String> receivers  = new ArrayList<>();
 		Set<String> storeKeys 	= messagesStore.keySet();
 		WebResponse response 	= WebResponse.success(); 
 		
@@ -35,8 +36,14 @@ public class MessagingService {
 				messages.addAll(messagesStore.get(key));
 			}
 		}
+		
+		for (Message message : messages) {
+			receivers.add(message.getReceiver());
+		}
+		
 		response.setCode(requestId);
 		response.setMessages(messages);
+		response.setReceivers(receivers);
 		return response;
 	} 
 	
