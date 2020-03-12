@@ -1,5 +1,7 @@
 package net.mpimedia.service;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,11 @@ import net.mpimedia.entity.User;
 public class SessionService {
 
 	@Autowired
-	private RuntimeDataService registryService;
+	private RuntimeDataService runtimeDataService;
 
 	public boolean putUser(String requestId, User finalUser) {
 
-		SessionData existingSessionData = registryService.getSessionData(requestId);
+		SessionData existingSessionData = runtimeDataService.getSessionData(requestId);
 
 		if (existingSessionData != null) {
 			existingSessionData.setUser(finalUser);
@@ -26,7 +28,7 @@ public class SessionService {
 				existingSessionData.setDivision(null);
 			}
 
-			registryService.storeSessionData(requestId, existingSessionData);
+			runtimeDataService.storeSessionData(requestId, existingSessionData);
 			return true;
 		}
 
@@ -39,20 +41,24 @@ public class SessionService {
 
 	public SessionData GetSessionData(WebRequest request) {
 
-		SessionData existingSessionData = registryService.getSessionData(request.getRequestId());
+		SessionData existingSessionData = runtimeDataService.getSessionData(request.getRequestId());
 		return existingSessionData;
 	}
 
 	public boolean updateSessionData(String requestId, SessionData session) {
 
-		SessionData existingSessionData = registryService.getSessionData(requestId);
+		SessionData existingSessionData = runtimeDataService.getSessionData(requestId);
 
 		if (existingSessionData != null) {
-			registryService.storeSessionData(requestId, session);
+			runtimeDataService.storeSessionData(requestId, session);
 			return true;
 		}
 
 		return false;
+	}
+	
+	public Set<String> getSessionKeys(){
+		return runtimeDataService.getSessionKeys();
 	}
 
 }

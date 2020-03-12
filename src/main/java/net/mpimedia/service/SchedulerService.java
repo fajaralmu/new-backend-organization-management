@@ -20,7 +20,7 @@ public class SchedulerService {
 	@Autowired
 	private TemporaryDataService temporaryDataService;
 	@Autowired
-	private RealtimeService2 realtimeService;
+	private RealtimeService realtimeService;
 
 	private static final Long MAX_IDLE_TIME = 120000L;
 
@@ -67,8 +67,9 @@ public class SchedulerService {
 							realtimeService.sendProgress(Math.abs(1-remainingDuration) * 100d, string);
 
 							if (delta >= MAX_IDLE_TIME) {
-								log.warn("**WILL REMOVE SESSION WITH KEY: {}, idle time: {}", string, delta);
+								log.warn("WILL REMOVE SESSION WITH KEY: {}, idle time: {}", string, delta);
 								registryService.remove(string);
+								log.info("Session has been Removed");
 							}
 						}
 						}catch (Exception e) { 

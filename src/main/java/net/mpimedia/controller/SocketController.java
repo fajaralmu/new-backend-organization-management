@@ -9,7 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.mpimedia.service.RealtimeService2;
+import net.mpimedia.service.RealtimeService;
 import net.mpimedia.util.LogProxyFactory;
 
 @CrossOrigin
@@ -19,7 +19,7 @@ public class SocketController {
 	@Autowired
 	private SimpMessagingTemplate webSocket;
 	@Autowired
-	RealtimeService2 realtimeUserService;
+	RealtimeService realtimeUserService;
 	
 	public SocketController() {
 		log.info("------------------SOCKET CONTROLLER #1-----------------");

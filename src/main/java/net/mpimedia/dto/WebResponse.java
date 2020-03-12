@@ -3,8 +3,7 @@ package net.mpimedia.dto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +12,7 @@ import lombok.NoArgsConstructor;
 import net.mpimedia.annotation.Dto;
 import net.mpimedia.entity.BaseEntity;
 import net.mpimedia.entity.Division;
+import net.mpimedia.entity.Message;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.entity.User;
 
@@ -33,15 +33,21 @@ public class WebResponse implements Serializable {
 	private String code = "00";
 	private String message;
 	private User user;
-	private BaseEntity entity;
-	private List<BaseEntity> entities;
-	private List<Division> divisions; 
-
-	private int totalData;
+	private BaseEntity entity; 
 	private SessionData sessionData;
-	private boolean loggedIn;
-
-	private Filter filter;
+	private Filter filter; 
+	
+	private int totalData;
+	private boolean loggedIn; 
+	
+	@Builder.Default
+	private List<BaseEntity> entities = new ArrayList<>();
+	@Builder.Default
+	private List<Division> divisions = new ArrayList<>();
+	@Builder.Default
+	private List<Message> messages = new ArrayList<>();
+	@Builder.Default
+	private Set<String> sessionKeys = new ArrayList<>();
 
 	//realtime loading
 	private String requestId;

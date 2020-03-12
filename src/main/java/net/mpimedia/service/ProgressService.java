@@ -11,7 +11,7 @@ import net.mpimedia.util.LogProxyFactory;
 public class ProgressService {
 	
 	@Autowired
-	private RealtimeService2 realtimeService;
+	private RealtimeService realtimeService;
 	
 	private double currentProgress=  0.0;
 	

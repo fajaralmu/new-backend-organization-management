@@ -11,6 +11,7 @@ import net.mpimedia.entity.Division;
 import net.mpimedia.entity.Event;
 import net.mpimedia.entity.Institution;
 import net.mpimedia.entity.Member;
+import net.mpimedia.entity.Message;
 import net.mpimedia.entity.Position;
 import net.mpimedia.entity.Post;
 import net.mpimedia.entity.Program;
@@ -30,31 +31,32 @@ public class WebRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 110411933791444017L;
 
-	  private User user ;
-      private Division division ;
-      private Event event ;
-      private Institution institution ;
-      private Position position ;
-      private Post post ;
-      private  Program program ;
-      private  Section section ;
-      private Member member ;
-      private long divisionId ;
+	private User user;
+	private Division division;
+	private Event event;
+	private Institution institution;
+	private Position position;
+	private Post post;
+	private Program program;
+	private Section section;
+	private Member member;
+	private Message message;
 
-      private String entity ;
-      private Filter filter ;
+	private String entity;
+	private Filter filter;
 
-      private int year ;
-      private int month ;
+	private int year;
+	private int month;
+	private long divisionId;
 
-      //public
-      private String requestId ;
-      
-      //msg
-      private String destination;
-      private String value;
-      private String username;
-      
-      private RegisteredRequest registeredRequest;
+	// public
+	private String requestId;
+
+	// msg
+	private String destination;
+	private String value;
+	private String username;
+
+	private RegisteredRequest registeredRequest;
 
 }

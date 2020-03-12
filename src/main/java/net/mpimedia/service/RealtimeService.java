@@ -10,13 +10,13 @@ import net.mpimedia.dto.WebResponse;
 import net.mpimedia.util.LogProxyFactory;
 
 @Service
-public class RealtimeService2 {
-	Logger log = LoggerFactory.getLogger(RealtimeService2.class);
+public class RealtimeService {
+	Logger log = LoggerFactory.getLogger(RealtimeService.class);
 
 	@Autowired
 	private SimpMessagingTemplate webSocket; 
 
-	public RealtimeService2() {
+	public RealtimeService() {
 		LogProxyFactory.setLoggers(this);
 		log.info("=======================REALTIME SERVICE 2======================="); 
 	}
