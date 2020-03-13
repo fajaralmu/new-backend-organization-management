@@ -49,10 +49,10 @@ public class MessagingService {
 	
 	public synchronized void updateChat(String senderReqId, String receiver) {
 		WebResponse senderMessages = getMessages(senderReqId); 
-		WebResponse receiverMessages = getMessages(senderReqId);
+		WebResponse receiverMessages = getMessages(receiver);
 		
-		realtimeService.sendMessageChat(senderMessages);
-		realtimeService.sendMessageChat(receiverMessages);
+		realtimeService.sendMessageChat(senderMessages, senderReqId);
+		realtimeService.sendMessageChat(receiverMessages, receiver);
 	}
 
 	public synchronized WebResponse sendMessage(WebRequest webRequest) {

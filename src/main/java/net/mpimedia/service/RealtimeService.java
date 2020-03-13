@@ -39,8 +39,8 @@ public class RealtimeService {
 	}
 
 
-	public void sendMessageChat(WebResponse response) {
-		webSocket.convertAndSend("/wsResp/messages", response);
+	public void sendMessageChat(WebResponse response, String requestId) {
+		webSocket.convertAndSend("/wsResp/messages/"+requestId, response);
 		
 	}
 
