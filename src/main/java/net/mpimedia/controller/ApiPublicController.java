@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.ApplicationService;
 import net.mpimedia.util.LogProxyFactory;
+import net.mpimedia.util.RestUtil;
 
 @Slf4j
 @CrossOrigin
@@ -25,8 +26,10 @@ import net.mpimedia.util.LogProxyFactory;
 public class ApiPublicController {
 	
 	@Autowired
-	private ApplicationService appService;
-	 
+	private ApplicationService appService; 
+	
+	@Autowired
+	private RestUtil restUtil;
 
 	@PostConstruct
 	public void init() {
@@ -36,6 +39,7 @@ public class ApiPublicController {
 	@PostMapping(value = "/generateappid", produces = MediaType.APPLICATION_JSON_VALUE)
 	public WebResponse generateappid( HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException { 
+		restUtil.printRequest(httpRequest);
 		return appService.generateAppId(httpRequest.getHeader("requestId"));
 	}
 	

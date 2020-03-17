@@ -46,10 +46,10 @@ public class SessionData extends BaseEntity implements Remote, Serializable {
 	public String message;
 	@Column(name="request_day")
 	public Date requestDate;
+	@Column(name="user_agent")
+	private String userAgent; 
+	 
 	
-	@Transient
-	@Builder.Default
-	private Date modifiedDate = new Date();
 	@Transient
 	@JsonIgnore
 	private List<Program> programs;
