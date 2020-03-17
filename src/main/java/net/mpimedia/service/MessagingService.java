@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
-import net.mpimedia.entity.Message; 
+import net.mpimedia.entity.Message;
+import net.mpimedia.entity.SessionData; 
 
 @Service
 public class MessagingService {
@@ -95,10 +96,23 @@ public class MessagingService {
 
 	 
 	public WebResponse getAvailableSessions(WebRequest webRequest) {
-		Set<String> sessionKeys = sessionService.getSessionKeys();
 		
 		WebResponse response = WebResponse.success();
-		response.setSessionKeys(sessionKeys);
+		
+		Set<String> sessionKeys = sessionService.getSessionKeys();  
+		List<Map<String, Object>> sessionMap = new ArrayList<>();
+		 
+		for(String key:sessionKeys) {
+			final SessionData sessionData = sessionService.GetSessionData(key);
+			sessionMap.add(new HashMap<String, Object>() {
+				{
+					put("key", key);
+					put("userAgent", sessionData.getUserAgent());
+				}
+			});
+		}
+		
+		response.setSessionKeys(sessionMap );
 		return response;
 		
 	}

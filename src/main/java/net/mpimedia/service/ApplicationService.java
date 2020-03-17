@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,13 @@ public class ApplicationService {
 	 * @param requestId
 	 * @return
 	 */
-	public WebResponse generateAppId(String requestId) {
+	public WebResponse generateAppId(HttpServletRequest httpServletRequest) {
 		WebResponse response = WebResponse.success();
 
 		String RandomChar = UUID.randomUUID().toString();
-
+		String requestId  = httpServletRequest.getHeader("requestId");
+		String userAgent  = httpServletRequest.getHeader("user-agent");
+		
 		boolean exist = false;
 
 		if (null != requestId) {
@@ -55,7 +58,7 @@ public class ApplicationService {
 
 		if (!exist) {
 			registryService.storeSessionData(RandomChar,
-					SessionData.builder().key(RandomChar).message(RandomChar).requestDate(new Date()).build());
+					SessionData.builder().key(RandomChar).userAgent(userAgent).message(RandomChar).requestDate(new Date()).build());
 		}
 		
 		return response;

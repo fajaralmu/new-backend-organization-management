@@ -15,6 +15,12 @@ public class SessionService {
 	@Autowired
 	private RuntimeDataService runtimeDataService;
 
+	/**
+	 * put user in session
+	 * @param requestId
+	 * @param finalUser
+	 * @return
+	 */
 	public boolean putUser(String requestId, User finalUser) {
 
 		SessionData existingSessionData = runtimeDataService.getSessionData(requestId);
@@ -35,16 +41,43 @@ public class SessionService {
 		return false;
 	}
 
+	/**
+	 * remove user from session
+	 * @param requestId
+	 * @return
+	 */
 	public Boolean removeUser(String requestId) {
 		return putUser(requestId, null);
 	}
 
-	public SessionData GetSessionData(WebRequest request) {
+	/**
+	 * get session data by request
+	 * @param request
+	 * @return
+	 */
+	public SessionData GetSessionData(final WebRequest request) {
 
 		SessionData existingSessionData = runtimeDataService.getSessionData(request.getRequestId());
 		return existingSessionData;
 	}
+	
+	/**
+	 * get session data by requestId
+	 * @param requestId
+	 * @return
+	 */
+	public SessionData GetSessionData(final String requestId) {
 
+		SessionData existingSessionData = runtimeDataService.getSessionData(requestId);
+		return existingSessionData;
+	}
+
+	/**
+	 * update entire session by requestId
+	 * @param requestId
+	 * @param session
+	 * @return
+	 */
 	public boolean updateSessionData(String requestId, SessionData session) {
 
 		SessionData existingSessionData = runtimeDataService.getSessionData(requestId);
@@ -57,6 +90,10 @@ public class SessionService {
 		return false;
 	}
 	
+	/**
+	 * get session keys
+	 * @return
+	 */
 	public Set<String> getSessionKeys(){
 		return runtimeDataService.getSessionKeys();
 	}

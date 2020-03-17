@@ -40,7 +40,7 @@ public class ApiPublicController {
 	public WebResponse generateappid( HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) throws IOException { 
 		restUtil.printRequest(httpRequest);
-		return appService.generateAppId(httpRequest.getHeader("requestId"));
+		return appService.generateAppId(httpRequest);
 	}
 	
 	 

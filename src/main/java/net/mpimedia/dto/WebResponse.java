@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -47,7 +48,7 @@ public class WebResponse implements Serializable {
 	private List<Division> divisions = new ArrayList<>();
 	@Builder.Default
 	private List<Message> messages = new ArrayList<>(); 
-	private Set<String> sessionKeys;
+	private List<Map<String, Object>> sessionKeys;
 	@Builder.Default
 	private List<String> receivers = new ArrayList<>(); 
 
