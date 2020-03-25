@@ -118,7 +118,7 @@ public class RuntimeDataService {
 	public Set<String> getSessionKeys() {
 		Set<String> groupNames = SESSION_MAP.keySet();
 
-		System.out.println(groupNames);
+		System.out.println("session keys: "+groupNames);
 		return groupNames;
 	}
 

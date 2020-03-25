@@ -9,14 +9,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.SessionData;
 import net.mpimedia.util.LogProxyFactory;
 
 @Service
+@Slf4j
 public class ApplicationService {
 	@Autowired
 	private RuntimeDataService registryService;
+	@Autowired
+	private MessagingService messagingService;
 
 	@PostConstruct
 	public void init() {
@@ -57,8 +61,23 @@ public class ApplicationService {
 		
 
 		if (!exist) {
-			registryService.storeSessionData(generatedSessionKey,
-					SessionData.builder().key(generatedSessionKey).userAgent(userAgent).message(generatedSessionKey).requestDate(new Date()).build());
+			/**
+			 * notify others
+			 */
+			final String sessionKey = generatedSessionKey;
+			
+			log.info("Will notify other");
+			Thread thread = new Thread(()->  { 
+				registryService.storeSessionData(sessionKey,
+						SessionData.builder().key(sessionKey).userAgent(userAgent).message(sessionKey).requestDate(new Date()).build());
+				
+				messagingService.handleNewUserLive(sessionKey);
+				
+			});
+			
+			thread.start();
+		}else {
+			
 		}
 		
 		return response;

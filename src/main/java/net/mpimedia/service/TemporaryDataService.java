@@ -28,14 +28,14 @@ public class TemporaryDataService {
 
 			@Override
 			public void run() {
-				refresh();
+				refreshDataFromDatabase();
 
 			}
 		});
 		thread.start();
 	}
 	
-	private void refresh() {
+	private void refreshDataFromDatabase() {
 		log.info("Refresh TemporaryDataService");
 
 		this.divisions = divisionRepository.findAll();
@@ -50,7 +50,7 @@ public class TemporaryDataService {
 		}
 
 		if (this.divisions.size() == 0) {
-			refresh();
+			refreshDataFromDatabase();
 			return divisionRepository.findByInstitution(user.getInstitution());
 
 		}
@@ -90,7 +90,7 @@ public class TemporaryDataService {
 		if (divisions.size() == 0) {
 			
 			try {
-				refresh();
+				refreshDataFromDatabase();
 				return divisionRepository.findById(divisionId).get();
 		
 			} catch (Exception e) {

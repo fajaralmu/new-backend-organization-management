@@ -54,6 +54,11 @@ public class QueryUtil {
 		return EntityUtil.getObjectFromListByFieldName("name", name, fields);
 	}
 
+	/**
+	 * get value from annotation @Column name
+	 * @param field
+	 * @return
+	 */
 	public static String getColumnName(Field field) {
 		log.info("get column Name " + field.getDeclaringClass() + " from " + field.getName());
 
@@ -469,9 +474,11 @@ public class QueryUtil {
 		}
 		
 		if(withFilteredField) {
+			Map<String, Object> fieldsFilter = filter.getFieldsFilter();
+			
 			filterSQL = createFilterSQL(
 					entityClass, 
-					filter.getFieldsFilter(), 
+					fieldsFilter, 
 					contains, 
 					exacts, 
 					rootFilterEntity);

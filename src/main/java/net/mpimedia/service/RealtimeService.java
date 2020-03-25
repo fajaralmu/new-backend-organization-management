@@ -43,5 +43,15 @@ public class RealtimeService {
 		webSocket.convertAndSend("/wsResp/messages/"+requestId, response);
 		
 	}
+	
+	/**
+	 * notify user with reqID = requestId that there is a new user live
+	 * @param response
+	 * @param requestId
+	 */
+	public void sendNewOnlineUser(WebResponse response, String requestId) {
+		log.info("Notify {} that there is new user", requestId);
+		webSocket.convertAndSend("/wsResp/live/"+requestId, response);
+	}
 
 }

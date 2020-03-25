@@ -17,6 +17,9 @@ import net.mpimedia.entity.SessionData;
 @Service
 public class MessagingService {
 	
+	private static final String CODE_NEW_LIVE = "12";
+	private static final String CODE_DISMISS_LIVE = "13";
+
 	private Map<String, List<Message>> messagesStore = new HashMap<String, List<Message>>();
 	
 	@Autowired
@@ -115,6 +118,38 @@ public class MessagingService {
 		response.setSessionKeys(sessionMap );
 		return response;
 		
+	}
+	
+	public void handleNewUserLive(String requestId) {
+		Set<String> sessionKeys = sessionService.getSessionKeys();  
+		
+		 
+		for(String key:sessionKeys) {
+			
+			if(key.equals(requestId)) {
+				continue;
+			}
+			
+			final SessionData sessionData = sessionService.GetSessionData(requestId);
+			
+			if(sessionData == null) {
+				continue;
+			}
+			
+			List<Map<String, Object>> sessionMap = new ArrayList<>();
+			sessionMap.add(new HashMap<String, Object>() {
+				{
+					put("key", requestId);
+					put("userAgent", sessionData.getUserAgent());
+				}
+			});
+			
+			WebResponse response = new WebResponse();
+			response.setCode(CODE_NEW_LIVE);
+			response.setSessionKeys(sessionMap);
+			
+			realtimeService.sendNewOnlineUser(response, key);
+		}
 	}
 
 }

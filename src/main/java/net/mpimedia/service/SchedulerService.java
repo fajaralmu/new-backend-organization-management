@@ -79,7 +79,7 @@ public class SchedulerService {
 				 * send status
 				 */
 				double remainingDuration = Double.valueOf(delta) /Double.valueOf( MAX_IDLE_TIME);
-				realtimeService.sendProgress(Math.abs(1-remainingDuration) * 100d, sessionKey);
+			//	realtimeService.sendProgress(Math.abs(1-remainingDuration) * 100d, sessionKey);
 
 				/**
 				 * check duration
