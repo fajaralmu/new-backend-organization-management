@@ -18,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.service.AccountService;
-import net.mpimedia.service.AdminService;
-import net.mpimedia.service.ApplicationService;
 import net.mpimedia.util.LogProxyFactory;
 import net.mpimedia.util.RestUtil;
 
