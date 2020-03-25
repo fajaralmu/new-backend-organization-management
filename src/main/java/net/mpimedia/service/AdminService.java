@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +16,13 @@ import net.mpimedia.dto.WebRequest;
 import net.mpimedia.dto.WebResponse;
 import net.mpimedia.entity.Event;
 import net.mpimedia.entity.SessionData;
-import net.mpimedia.repository.EventRepository;
 import net.mpimedia.util.CollectionUtil;
 import net.mpimedia.util.LogProxyFactory;
 
 @Service
 public class AdminService  {
 	@Autowired
-	private RuntimeDataService registryService;
-	@Autowired
-	private EventRepository eventRepository;
+	private RuntimeDataService registryService; 
 
 	@PostConstruct
 	public void init() {

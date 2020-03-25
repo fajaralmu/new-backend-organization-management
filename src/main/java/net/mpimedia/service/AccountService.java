@@ -231,7 +231,7 @@ public class AccountService {
 		if (null != sessionData && null != sessionData.getUser()) {
 			WebResponse response = WebResponse.success();
 			try {
-				 Division  division = temporaryDataService.getById(webRequest.getDivisionId());
+				 Division  division = temporaryDataService.getDivisionByDivisionId(webRequest.getDivisionId());
 
 				if (division != null) {
 					

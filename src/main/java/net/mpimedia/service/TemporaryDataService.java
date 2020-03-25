@@ -54,12 +54,12 @@ public class TemporaryDataService {
 			return divisionRepository.findByInstitution(user.getInstitution());
 
 		}
-		return getByInstitution(user.getInstitution());
+		return getDivisionByInstitution(user.getInstitution());
 	}
 
 	
 
-	private List<Division> getByInstitution(Institution institution) {
+	private List<Division> getDivisionByInstitution(Institution institution) {
 
 		List<Division> divisionFiltered = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class TemporaryDataService {
 		return divisionFiltered;
 	}
 
-	private Division filterById(long id) {
+	private Division getDivisionByIdFromRuntime(long id) {
 
 		for (Division division : divisions) {
 			
@@ -85,7 +85,7 @@ public class TemporaryDataService {
 		return null;
 	}
 
-	public Division getById(long divisionId) {
+	public Division getDivisionByDivisionId(long divisionId) {
 
 		if (divisions.size() == 0) {
 			
@@ -98,7 +98,7 @@ public class TemporaryDataService {
 			}
 		}
 
-		return filterById(divisionId);
+		return getDivisionByIdFromRuntime(divisionId);
 	}
 
 }

@@ -39,6 +39,8 @@ import net.mpimedia.util.QueryUtil;
 @Slf4j
 public class EntityService { 
 
+	private static final String ENTRY_POINT_INPUT_FIELD = "inputField";
+	
 	@Autowired
 	private EntityRepository mainRepository;
 	@Autowired
@@ -220,7 +222,7 @@ public class EntityService {
 			filter.setFieldsFilter(new HashMap<>());
 		}
 
-		final boolean inputFieldEntryPoint = "inputField".equals(filter.getEntryPoint());
+		final boolean inputFieldEntryPoint = ENTRY_POINT_INPUT_FIELD.equals(filter.getEntryPoint());
 
 		try {
 			switch (request.getEntity().toLowerCase()) {

@@ -42,42 +42,54 @@ public class SchedulerService {
 			@Override
 			public void run() {
 
-				while (true) {
-					final Set<String> keys = registryService.getSessionKeys();
-					 
-					
+				while (true) { 
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
+					} 
+					 
+					try {
+						validateAllSessions();
+					}catch (Exception e) { 
+						log.error("Error looping:{}", e);
 					}
-
-					if (keys != null) {
-						try {
-						for (String string : keys) {
-							SessionData sessionData = registryService.getSessionData(string);
-
-							Long systemDate = new Date().getTime();
-							Long delta = systemDate - sessionData.getModifiedDate().getTime();
-
-							/**
-							 * send status
-							 */
-							double remainingDuration = Double.valueOf(delta) /Double.valueOf( MAX_IDLE_TIME);
-							realtimeService.sendProgress(Math.abs(1-remainingDuration) * 100d, string);
-
-							if (delta >= MAX_IDLE_TIME) {
-								log.warn("WILL REMOVE SESSION WITH KEY: {}, idle time: {}", string, delta);
-								registryService.remove(string);
-								log.info("Session has been Removed");
-							}
-						}
-						}catch (Exception e) { 
-							log.error("Error looping:{}", e);
-						}
-					}
+					 
 
 				}
+			}
+
+			private void validateAllSessions() { 
+				final Set<String> keys = registryService.getSessionKeys();
+				
+				if(null != keys)
+					for (String string : keys) {
+						SessionData sessionData = registryService.getSessionData(string);
+	
+						validateSession(sessionData);
+					}
+			}
+
+			private void validateSession(SessionData sessionData) {
+				String sessionKey = sessionData.getKey();
+				Long systemDate = new Date().getTime();
+				Long delta = systemDate - sessionData.getModifiedDate().getTime();
+
+				/**
+				 * send status
+				 */
+				double remainingDuration = Double.valueOf(delta) /Double.valueOf( MAX_IDLE_TIME);
+				realtimeService.sendProgress(Math.abs(1-remainingDuration) * 100d, sessionKey);
+
+				/**
+				 * check duration
+				 */
+				if (delta >= MAX_IDLE_TIME) {
+					log.warn("WILL REMOVE SESSION WITH KEY: {}, idle time: {}", sessionKey, delta);
+					registryService.remove(sessionKey);
+					log.info("Session has been Removed");
+				}
+				
 			}
 		});
 

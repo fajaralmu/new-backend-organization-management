@@ -31,7 +31,7 @@ public class ApplicationService {
 	public WebResponse generateAppId(HttpServletRequest httpServletRequest) {
 		WebResponse response = WebResponse.success();
 
-		String RandomChar = UUID.randomUUID().toString();
+		String generatedSessionKey = UUID.randomUUID().toString();
 		String requestId  = httpServletRequest.getHeader("requestId");
 		String userAgent  = httpServletRequest.getHeader("user-agent");
 		
@@ -41,7 +41,7 @@ public class ApplicationService {
 			SessionData sessionData = registryService.getSessionData(requestId);
 
 			if (null != sessionData) {
-				RandomChar = requestId;
+				generatedSessionKey = requestId;
 				exist = true;
 
 				if (sessionData.getUser() != null) {
@@ -53,12 +53,12 @@ public class ApplicationService {
 			response.setSessionData(sessionData);
 		}
 
-		response.setMessage(RandomChar);
+		response.setMessage(generatedSessionKey);
 		
 
 		if (!exist) {
-			registryService.storeSessionData(RandomChar,
-					SessionData.builder().key(RandomChar).userAgent(userAgent).message(RandomChar).requestDate(new Date()).build());
+			registryService.storeSessionData(generatedSessionKey,
+					SessionData.builder().key(generatedSessionKey).userAgent(userAgent).message(generatedSessionKey).requestDate(new Date()).build());
 		}
 		
 		return response;

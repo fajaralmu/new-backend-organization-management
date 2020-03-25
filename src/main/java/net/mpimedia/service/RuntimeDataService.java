@@ -26,27 +26,21 @@ public class RuntimeDataService {
 	public static final String JSESSSIONID = "JSESSIONID";
 
 	public static final String SESSION_DATA = "session_data";
-	
+
 	static final ObjectMapper objectMapper = new ObjectMapper();
- 
+
 	private static final Map<String, Object> SESSION_MAP = Collections.synchronizedMap(new HashMap<>());
-	
+
 //	private static final CacheAccess<String, Object> SESSION_MAP = JCS.getInstance(SESSION_DATA);
 //	private static final GroupCacheAccess<Object, Object> CACHE_GROUP = JCS.getGroupCacheInstance(SESSION_DATA);
 
-	
 	@Autowired
 	private SessionDataRepository sessionDataRepository;
-	
-	
+
 	public RuntimeDataService() {
-		 
-		
-		
+
 		System.out.println("======================= RuntimeDataService ===============================");
 	}
-	
-	
 
 	/**
 	 * get remote object
@@ -56,76 +50,74 @@ public class RuntimeDataService {
 	 * @return
 	 */
 	public SessionData getModel(String key) {
-		
-		if(SESSION_MAP.get(key)!=null) {
-			return (SessionData) SESSION_MAP.get(key); 
+
+		if (SESSION_MAP.get(key) != null) {
+			return (SessionData) SESSION_MAP.get(key);
 		}
-		return null; 
+		return null;
 	}
 
-	public synchronized SessionData getSessionData(String requestId) { 
+	public synchronized SessionData getSessionData(String requestId) {
 		return this.getModel(requestId);
 	}
 
 	/**
 	 * update session MAP
+	 * 
 	 * @param requestId
 	 * @param existingSessionData
 	 */
-	public synchronized void storeSessionData(String requestId, SessionData existingSessionData) {  
-		
-		if(existingSessionData != null) {
+	public synchronized void storeSessionData(String requestId, SessionData existingSessionData) {
+
+		if (existingSessionData != null) {
 			existingSessionData.setModifiedDate(new Date());
 		}
-		 
-		SESSION_MAP.put(requestId, existingSessionData);
-	 
-		
-		Thread thread = new Thread(new Runnable() { 
-				@Override
-				public void run() {
-					
-					log.info("Will save to DB: {}",existingSessionData);
-					
-					if(existingSessionData!=null) {
-						sessionDataRepository.save(existingSessionData); 
 
-						log.info("Saved session {} to DB", requestId);
-					}
-					
-					
+		SESSION_MAP.put(requestId, existingSessionData);
+
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+
+				log.info("Will save to DB: {}", existingSessionData);
+
+				if (existingSessionData != null) {
+					sessionDataRepository.save(existingSessionData);
+
+					log.info("Saved session {} to DB", requestId);
 				}
-			} 
-		);
-		
+
+			}
+		});
+
 		thread.start();
 	}
-	
+
 	public void refreshSession(String requestId) {
-		
+
 		log.info("Will refresh session: {}", requestId);
-		
+
 		SessionData sessionData = getModel(requestId);
-		
-		if(sessionData!=null) {
+
+		if (sessionData != null) {
 			storeSessionData(requestId, sessionData);
-		}	
+		}
 	}
-	
-	/**======================ACCESSED BY SCHEDULER================== **/
-	
+
+	/** ======================ACCESSED BY SCHEDULER================== **/
+
 	public void clear() {
-		this.SESSION_MAP.clear();
+		SESSION_MAP.clear();
 	}
-	
+
 	public synchronized void remove(String key) {
 		log.info("Will remove from session: {}", key);
-		this.SESSION_MAP.remove(key);
+		SESSION_MAP.remove(key);
 	}
-	
-	public Set<String> getSessionKeys(){
-		Set<String> groupNames = this.SESSION_MAP.keySet();
-		
+
+	public Set<String> getSessionKeys() {
+		Set<String> groupNames = SESSION_MAP.keySet();
+
 		System.out.println(groupNames);
 		return groupNames;
 	}

@@ -36,6 +36,10 @@ public class Message extends BaseEntity {
 
 	}
 
+	public static void main(String[] args) {
+	//	System.out.println(ZoneId.systemDefault());
+	}
+	
 	@Column
 	@FormField
 	private int admin;
