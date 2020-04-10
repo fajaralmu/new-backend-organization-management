@@ -56,6 +56,9 @@ public class WebRequest implements Serializable {
 	private String destination;
 	private String value;
 	private String username;
+	
+	//live streaming
+	private String imageData;
 
 	private RegisteredRequest registeredRequest;
 

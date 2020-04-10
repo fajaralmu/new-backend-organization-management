@@ -63,14 +63,17 @@ public class SchedulerService {
 				final Set<String> keys = registryService.getSessionKeys();
 				
 				if(null != keys)
-					for (String string : keys) {
+					loop: for (String string : keys) {
 						SessionData sessionData = registryService.getSessionData(string);
 	
-						validateSession(sessionData);
+						boolean valid = validateSession(sessionData);
+						if(!valid) {
+							break loop;
+						}
 					}
 			}
 
-			private void validateSession(SessionData sessionData) {
+			private boolean validateSession(SessionData sessionData) {
 				String sessionKey = sessionData.getKey();
 				Long systemDate = new Date().getTime();
 				Long delta = systemDate - sessionData.getModifiedDate().getTime();
@@ -88,7 +91,9 @@ public class SchedulerService {
 					log.warn("WILL REMOVE SESSION WITH KEY: {}, idle time: {}", sessionKey, delta);
 					registryService.remove(sessionKey);
 					log.info("Session has been Removed");
+					return true;
 				}
+				return false;
 				
 			}
 		});

@@ -54,4 +54,11 @@ public class RealtimeService {
 		webSocket.convertAndSend("/wsResp/live/"+requestId, response);
 	}
 
+
+	public void sendImageData(String requestId, String imageData) {
+//		log.info("Notify {} that there is new user", requestId);
+		webSocket.convertAndSend("/wsResp/livestream/"+requestId, WebResponse.builder().imageData(imageData).build());
+		
+	}
+
 }

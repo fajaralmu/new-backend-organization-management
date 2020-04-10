@@ -18,7 +18,7 @@
         <link rel="apple-touch-icon" href="${baseResourcePath }/logo192.png"/>
         <link rel="manifest" href="${baseResourcePath }/manifest.json"/>
         <title>Mahasiswa Pencinta Islam</title>
-        <link href="${baseResourcePath }/static/css/main.2a9582f8.chunk.css" rel="stylesheet">
+        <link href="${baseResourcePath }/static/css/main.341edbf1.chunk.css" rel="stylesheet">
         </head>
         <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -30,8 +30,8 @@
                         <r.length;o++){var u=r[o];0!==p[u]&&(n=!1)}n&&(c.splice(t--,1),e=a(a.s=r[0]))}return e}var r={},p={1:0},c=[];function a(e){if(r[e])return r[e].exports;var t=r[e]={i:e,l:!1,exports:{}};return l[e].call(t.exports,t,t.exports,a),t.l=!0,t.exports}a.m=l,a.c=r,a.d=function(e,t,r){a.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},a.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},a.t=function(t,e){if(1&e&&(t=a(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(a.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var n in t)a.d(r,n,function(e){return t[e]}.bind(null,n));return r},a.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return a.d(t,"a",t),t},a.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},a.p="/";var t=this["webpackJsonporganization-management"]=this["webpackJsonporganization-management"]||[],n=t.push.bind(t);t.push=e,t=t.slice();for(var o=0;o
                             <t.length;o++)e(t[o]);var s=n;f()}([])
                             </script>
-                            <script src="${baseResourcePath }/static/js/2.18d7677a.chunk.js"></script>
-                            <script src="${baseResourcePath }/static/js/main.6139a61d.chunk.js"></script>
+                            <script src="${baseResourcePath }/static/js/2.5cbc52fc.chunk.js"></script>
+                            <script src="${baseResourcePath }/static/js/main.62548d2d.chunk.js"></script>
                         </body>
                     </html>
 

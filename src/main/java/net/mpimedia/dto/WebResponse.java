@@ -56,6 +56,8 @@ public class WebResponse implements Serializable {
 	private String requestId;
 	private double percentage;
 	
+	private String imageData;
+	
 	public WebResponse(String code, String message) {
 		this.code = code;
 		this.message = message;
